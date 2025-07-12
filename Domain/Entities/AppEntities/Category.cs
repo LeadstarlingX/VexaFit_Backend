@@ -13,7 +13,7 @@ namespace Domain.Entities.AppEntities
     {
         public int CategoryId { get; set; }
         public string Name { get; set; } = string.Empty;
-        public CategoryTypeEnum CategoryType { get; set; }
+        public CategoryTypeEnum Type { get; set; }
 
         public ICollection<Exercise> Exercises { get; set; } = []!;
         public ICollection<ExercisePosition>? ExercisePositions { get; set; } = [];
