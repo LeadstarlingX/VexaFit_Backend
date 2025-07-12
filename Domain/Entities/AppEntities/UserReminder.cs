@@ -12,7 +12,7 @@ namespace Domain.Entities.AppEntities
         public int ReminderId { get; set; }
         public Guid UserId { get; set; }
         public DateTime TimeOfDay { get; set; }
-        public string Days { get; set; }
+        public string Days { get; set; } = string.Empty;
         public bool IsActive { get; set; }
 
     }

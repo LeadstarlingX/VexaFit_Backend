@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.IAppServices.ExercisePosition
+namespace Application.DTOs.Meal
 {
-    internal interface IExercisePositionService
+    public class CreateMealDTO
     {
     }
 }

@@ -5,19 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs.Achievement;
+using Application.IAppServices.Common;
 
 namespace Application.IAppServices.Achievement
 {
-    public interface IAchievementService
+    public interface IAchievementService : IService<AchievementDTO, CreateAchievementDTO, UpdateAchievementDTO>
     {
-        Task<AchievementDTO> GetByIdAsync(int id);
-        Task<IEnumerable<AchievementDTO>> GetAllAsync();
-        Task<AchievementDTO> CreateAsync(CreateAchievementDTO dto);
-        Task<IEnumerable<AchievementDTO>> CreateBulkAsync(IEnumerable<CreateAchievementDTO> dtos);
-        Task<AchievementDTO> UpdateAsync(UpdateAchievementDTO dto);
-        Task<IEnumerable<AchievementDTO>> UpdateBulkAsync(IEnumerable<UpdateAchievementDTO> dto);
-        Task DeleteAsync(int id);
-        Task DeleteBulkAsync(IEnumerable<int> ids);
 
     }
 }
