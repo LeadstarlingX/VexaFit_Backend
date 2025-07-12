@@ -7,18 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="IAppServices\Authentication\" />
-    <Folder Include="IAppServices\Achievement\" />
-    <Folder Include="IAppServices\Category\" />
-    <Folder Include="IAppServices\Exercise\" />
-    <Folder Include="IAppServices\ExercisePosition\" />
-    <Folder Include="IAppServices\Food\" />
-    <Folder Include="IAppServices\MotivationSentece\" />
-    <Folder Include="IAppServices\Reminder\" />
-    <Folder Include="IAppServices\UserMeal\" />
-    <Folder Include="IAppServices\Workout\" />
     <Folder Include="Mapping\" />
-    <Folder Include="DTOs\" />
     <Folder Include="Filters\" />
   </ItemGroup>
 
@@ -26,6 +15,10 @@
     <PackageReference Include="AutoMapper" Version="15.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
 </Project>

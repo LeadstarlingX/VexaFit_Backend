@@ -11,7 +11,7 @@ namespace Infrastructure.Context
 {
     public class ApplicationUser : IdentityUser
     {
-        public string Name { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
         public UserGenderEnum GenderEnum { get; set; } = UserGenderEnum.Male;
         public UserGoalEnum GoalEnum { get; set; } = UserGoalEnum.WeightGain;
         public int Age { get; set; } = 0;
