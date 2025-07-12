@@ -9,7 +9,9 @@ namespace Application.DTOs.Achievement
 {
     public class UserAchievementDTO : BaseDTO<int>
     {
-        public Guid 
+        public int UserId { get; set; }
+        public int AchievementId { get; set; }
+        public DateTime DateUnlocked { get; set; }
 
     }
 }

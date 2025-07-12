@@ -10,7 +10,7 @@ namespace Application.DTOs.Achievement
     public class CreateAchievementDTO
     {
         [Required]
-        [StringLength(10, ErrorMessage = "Name of Achievement should be 10 characters minimum")]
+        [StringLength(10, ErrorMessage = "Achievement Name should be 10 characters minimum")]
         public string Name { get; set; } = string.Empty;
         [Required]
         [StringLength(10, ErrorMessage = "Description should be 10 characters minimum")]
