@@ -8,15 +8,17 @@
 
   <ItemGroup>
     <Folder Include="Mapping\" />
-    <Folder Include="DTOs\" />
     <Folder Include="Filters\" />
-    <Folder Include="IAppServices\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="15.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
 </Project>
