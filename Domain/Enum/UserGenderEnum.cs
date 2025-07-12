@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Common
+namespace Domain.Enum
 {
-    public class BaseDto<T>
+    public enum UserGenderEnum
     {
-        public T Id { get; set; }
+        Male = 0,
+        Female = 1,
     }
 }

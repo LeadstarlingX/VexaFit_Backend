@@ -7,18 +7,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Application.Helper
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public static class JTokenHelper
     {
-        /// <summary>
-        /// Removes the empty children and filter by fields.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <param name="jsonFields">The json fields.</param>
-        /// <param name="level">The level.</param>
-        /// <returns></returns>
         public static JToken RemoveEmptyChildrenAndFilterByFields(this JToken token, IList<string> jsonFields, int level = 1)
         {
             if (token.Type == JTokenType.Object)
@@ -71,13 +61,6 @@ namespace Application.Helper
             return token;
         }
 
-        /// <summary>
-        /// Determines whether [is empty or default].
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <returns>
-        ///   <c>true</c> if [is empty or default] [the specified token]; otherwise, <c>false</c>.
-        /// </returns>
         private static bool IsEmptyOrDefault(this JToken token)
         {
             return token.Type == JTokenType.Array && !token.HasValues || token.Type == JTokenType.Object && !token.HasValues;

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Application.IRepository;
 using Application.IUnitOfWork;
 using Application.Serializer;
-using Domain.Entities.IdentityEntites;
 using Infrastructure.Context;
 using Infrastructure.Repository;
 using Infrastructure.UnitOfWork;
@@ -18,18 +17,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public static class DependencyInjection
     {
 
-        /// <summary>
-        /// Adds the infrastructure.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        /// <param name="configuration">The configuration.</param>
-        /// <returns></returns>
         public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
         IConfiguration configuration) =>
@@ -38,11 +28,6 @@ namespace Infrastructure
             .AddDatabase(configuration)
             .AddIdentityOptions();
 
-        /// <summary>
-        /// Adds the services.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        /// <returns></returns>
         private static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped(typeof(IAppRepository<>), typeof(Repository.AppRepository<>));
@@ -56,11 +41,6 @@ namespace Infrastructure
             return services;
         }
 
-        /// <summary>
-        /// Adds the identity options.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        /// <returns></returns>
         private static IServiceCollection AddIdentityOptions(this IServiceCollection services)
         {
             services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
@@ -80,12 +60,6 @@ namespace Infrastructure
             return services;
         }
 
-        /// <summary>
-        /// Adds the database.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        /// <param name="configuration">The configuration.</param>
-        /// <returns></returns>
         private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<ApplicationDbContext>(options =>

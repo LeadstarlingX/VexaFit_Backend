@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Common
+namespace Domain.Enum
 {
-    public class BaseDto<T>
+    public enum CategoryTypeEnum
     {
-        public T Id { get; set; }
+        MuscleGroup = 0,
+        ExerciseType = 1,
+        Position = 2
     }
 }

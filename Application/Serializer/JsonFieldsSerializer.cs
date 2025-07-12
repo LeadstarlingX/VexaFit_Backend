@@ -8,19 +8,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Application.Serializer
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <seealso cref="Application.Serializer.IJsonFieldsSerializer" />
     public class JsonFieldsSerializer : IJsonFieldsSerializer
     {
-        /// <summary>
-        /// Serializes the specified object to serialize.
-        /// </summary>
-        /// <param name="objectToSerialize">The object to serialize.</param>
-        /// <param name="jsonFields">The json fields.</param>
-        /// <returns></returns>
-        /// <exception cref="System.ArgumentNullException">objectToSerialize</exception>
         public string Serialize(ISerializableObject objectToSerialize, string jsonFields)
         {
             if (objectToSerialize == null)
@@ -45,12 +34,6 @@ namespace Application.Serializer
             return json;
         }
 
-        /// <summary>
-        /// Serializes the specified object to serialize.
-        /// </summary>
-        /// <param name="objectToSerialize">The object to serialize.</param>
-        /// <param name="jsonFields">The json fields.</param>
-        /// <returns></returns>
         private string Serialize(object objectToSerialize, IList<string> jsonFields = null)
         {
             var jToken = JToken.FromObject(objectToSerialize);
@@ -65,11 +48,6 @@ namespace Application.Serializer
             return jTokenResult;
         }
 
-        /// <summary>
-        /// Gets the properties into list.
-        /// </summary>
-        /// <param name="fields">The fields.</param>
-        /// <returns></returns>
         private IList<string> GetPropertiesIntoList(string fields)
         {
             IList<string> properties = fields.ToLowerInvariant()

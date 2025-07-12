@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
-namespace Application.Common
+namespace Infrastructure.Context
 {
-    public class BaseDto<T>
+    public class ApplicationRole : IdentityRole
     {
-        public T Id { get; set; }
     }
 }

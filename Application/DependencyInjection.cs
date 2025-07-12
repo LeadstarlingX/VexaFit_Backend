@@ -7,16 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Application
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public static class DependencyInjection
     {
-        /// <summary>
-        /// Adds the application.
-        /// </summary>
-        /// <param name="services">The services.</param>
-        /// <returns></returns>
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
 

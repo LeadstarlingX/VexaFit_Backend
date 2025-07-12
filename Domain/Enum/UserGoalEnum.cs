@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Common
+namespace Domain.Enum
 {
-    public class BaseDto<T>
+    public enum UserGoalEnum
     {
-        public T Id { get; set; }
+        WeightGain = 0,
+        WeightLoss = 1
     }
 }
