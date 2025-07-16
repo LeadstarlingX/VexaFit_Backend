@@ -12,10 +12,12 @@ namespace Domain.Entities.AppEntities
     public class Category : BaseEntity
     {
         public int CategoryId { get; set; }
+
+
         public string Name { get; set; } = string.Empty;
         public CategoryTypeEnum Type { get; set; }
+        
 
-        public ICollection<Exercise> Exercises { get; set; } = []!;
-        public ICollection<ExercisePosition>? ExercisePositions { get; set; } = [];
+        public virtual ICollection<ExerciseCategory> ExerciseCategories { get; set; } = [];
     }
 }

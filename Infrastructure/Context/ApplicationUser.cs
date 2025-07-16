@@ -15,13 +15,13 @@ namespace Infrastructure.Context
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public UserGenderEnum GenderEnum { get; set; } = UserGenderEnum.Male;
-        public UserGoalEnum GoalEnum { get; set; } = UserGoalEnum.WeightGain;
-        public int Age { get; set; } = 0;
-        public int Height { get; set; } = 0;
-        public int Weight { get; set; } = 0;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public bool IsActive { get; set; } = true;
         public string? RefreshToken { get; set; }
+
+        public virtual ICollection<WorkoutReminder> WorkoutReminders { get; set; } = [];
+        public virtual ICollection<CustomWorkout> CustomWorkouts { get; set; } = [];
+        
     }
 }

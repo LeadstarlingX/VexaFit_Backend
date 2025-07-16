@@ -7,15 +7,14 @@ using Domain.Entities.Common;
 
 namespace Domain.Entities.AppEntities
 {
-    public class Image : BaseEntity
+    public  class ExerciseCategory : BaseEntity
     {
-        public int ImageId { get; set; }
+        public int ExerciseCategoryId { get; set; }
+        public int CategoryId { get; set; }
         public int ExerciseId { get; set; }
 
-        public string Url { get; set; } = string.Empty;
-        public string AlternativeText { get; set; } = string.Empty;
 
+        public virtual Category Category { get; set; } = null!;
         public virtual Exercise Exercise { get; set; } = null!;
-
     }
 }
