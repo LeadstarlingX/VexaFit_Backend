@@ -12,19 +12,23 @@ namespace Infrastructure.Context
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
     {
         #region Tables
-        internal DbSet<Achievement> Achievements { get; set; }
+        internal DbSet<ApplicationUser> Users { get; set; }
         internal DbSet<Category> Categories { get; set; }
-        internal DbSet<Exercise> Exercise { get; set; }
-        internal DbSet<ExercisePosition> ExercisePositions { get; set; }
-        internal DbSet<Food> Foods { get; set; }
+        internal DbSet<CustomWorkout> CustomWorkouts { get; set; }
+        internal DbSet<Exercise> Exercises { get; set; }
+        internal DbSet<ExerciseCategory> ExerciseCategories { get; set; }
         internal DbSet<Image> Images { get; set; }
         internal DbSet<MotivationSentence> MotivationSentences { get; set; }
-        internal DbSet<UserHistory> UserHistories { get; set; }
-        internal DbSet<UserMeal> UserMeals { get; set; }
-        internal DbSet<UserReminder> UserReminders { get; set; }
+        internal DbSet<PredefinedWorkout> PredefinedWorkouts { get; set; }
         internal DbSet<Video> Videos { get; set; }
         internal DbSet<Workout> Workouts { get; set; }
         internal DbSet<WorkoutExercise> WorkoutExercises { get; set; }
+        internal DbSet<WorkoutReminder> WorkoutReminders { get; set; }
+        internal DbSet<WorkoutReminderDate> WorkoutReminderDates { get; set; }
+        
+        
+
+
 
         #endregion
 
@@ -32,11 +36,6 @@ namespace Infrastructure.Context
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
-            modelBuilder.Entity<Achievement>(entity =>
-            {
-                entity.HasKey(e => e.AchievementId);
-                entity.ToTable("Achievements");
-            });
         }
 
     }
