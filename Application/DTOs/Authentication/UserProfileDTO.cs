@@ -8,10 +8,9 @@ using Application.DTOs.Common;
 
 namespace Application.DTOs.Authentication
 {
-    public class UserProfileDTO : BaseDTO<int>
+    public class UserProfileDTO : BaseDTO<string>
     {
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
         public TokenDTO Token { get; set; } = null!;

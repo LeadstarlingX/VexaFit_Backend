@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.DTOs.Common;
 
-namespace Application.DTOs.Meal
+namespace Application.DTOs.ExerciseCategory
 {
-    public class MealDTO : BaseDTO<int>
+    public class ExerciseCategoryDTO
     {
-
     }
 }

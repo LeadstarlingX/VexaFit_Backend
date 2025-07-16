@@ -12,12 +12,9 @@ namespace Application.DTOs.Authentication
     public class RegisterDTO
     {
         [Required]
-        [Display(Name = "First Name")]
-        public required string FirstName { get; set; }
+        [Display(Name = "User Name")]
+        public required string Username { get; set; }
 
-        [Required]
-        [Display(Name = "Last Name")]
-        public required string LastName { get; set; }
         [Required]
         [EmailAddress]
         public string? Email { get; set; }

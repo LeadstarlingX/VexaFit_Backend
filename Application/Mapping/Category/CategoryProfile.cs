@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 
-namespace Application.IAppServices.UserMeal
+namespace Application.Mapping.Category
 {
-    public interface IUserMealService
+    public class CategoryProfile : Profile
     {
     }
 }

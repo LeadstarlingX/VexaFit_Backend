@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="AppServices\Food\**" />
+    <EmbeddedResource Remove="AppServices\Food\**" />
+    <None Remove="AppServices\Food\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="15.0.1" />
     <PackageReference Include="EFCore.BulkExtensions" Version="8.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.18" />
@@ -21,7 +27,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
   </ItemGroup>
@@ -29,15 +34,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="AppServices\Category\" />
-    <Folder Include="AppServices\Exercise\" />
-    <Folder Include="AppServices\Food\" />
-    <Folder Include="AppServices\MotivationSentnce\" />
-    <Folder Include="AppServices\Workout\" />
-    <Folder Include="AppServices\Reminder\" />
   </ItemGroup>
 
 </Project>

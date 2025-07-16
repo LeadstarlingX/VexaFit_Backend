@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Mapping.Category;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Application
@@ -13,7 +14,7 @@ namespace Application
         {
 
             //services.AddAutoMapper(typeof(CarProfile).Assembly);
-            //services.AddAutoMapper(typeof(CategoryProfile).Assembly);
+            services.AddAutoMapper(x => x.AddMaps(typeof(CategoryProfile).Assembly));
 
 
             return services;

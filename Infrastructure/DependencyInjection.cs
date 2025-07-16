@@ -4,9 +4,12 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Application.IAppServices.Category;
 using Application.IRepository;
 using Application.IUnitOfWork;
+using Application.Mapping.Category;
 using Application.Serializer;
+using Infrastructure.AppServices.Category;
 using Infrastructure.Context;
 using Infrastructure.Repository;
 using Infrastructure.UnitOfWork;
@@ -33,8 +36,10 @@ namespace Infrastructure
             services.AddScoped(typeof(IAppRepository<>), typeof(Repository.AppRepository<>));
             services.AddScoped(typeof(IIdentityAppRepository<>), typeof(IdentityRepository<>));
             services.AddScoped<IJsonFieldsSerializer, JsonFieldsSerializer>();
-            //services.AddScoped<DataSeeder>();
             services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
+            services.AddAutoMapper(x => x.AddMaps(typeof(CategoryProfile).Assembly));
+            services.AddScoped<ICategoryService, CategoryService>();
+            //services.AddScoped<DataSeeder>();
             //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             //services.AddScoped<IAuthenticationService, AuthenticationService>();
 
@@ -68,6 +73,12 @@ namespace Infrastructure
             services.AddDbContext<IdentityAppDbContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("IdentityConnection")));
 
+            return services;
+        }
+
+        private static IServiceCollection AddBackgroundServices(this IServiceCollection services)
+        {
+            //services.AddHostedService<BookingPaymentCheckService>();
             return services;
         }
     }
