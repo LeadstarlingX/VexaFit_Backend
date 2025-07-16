@@ -32,16 +32,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AppServices\Achievement\" />
-    <Folder Include="AppServices\Authentication\" />
     <Folder Include="AppServices\Category\" />
-    <Folder Include="AppServices\ExercisePosition\" />
     <Folder Include="AppServices\Exercise\" />
     <Folder Include="AppServices\Food\" />
-    <Folder Include="AppServices\MotivationSentece\" />
-    <Folder Include="AppServices\Reminder\" />
-    <Folder Include="AppServices\UserMeal\" />
+    <Folder Include="AppServices\MotivationSentnce\" />
     <Folder Include="AppServices\Workout\" />
+    <Folder Include="AppServices\Reminder\" />
   </ItemGroup>
 
 </Project>
