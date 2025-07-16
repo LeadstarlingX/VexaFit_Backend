@@ -4,11 +4,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Application.IAppServices.Authentication;
 using Application.IAppServices.Category;
 using Application.IRepository;
 using Application.IUnitOfWork;
-using Application.Mapping.Category;
+using Application.Mapping.CategoryProfile;
 using Application.Serializer;
+using Infrastructure.AppServices.Athuenticaion;
 using Infrastructure.AppServices.Category;
 using Infrastructure.Context;
 using Infrastructure.Repository;
@@ -38,6 +40,8 @@ namespace Infrastructure
             services.AddScoped<IJsonFieldsSerializer, JsonFieldsSerializer>();
             services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
             services.AddAutoMapper(x => x.AddMaps(typeof(CategoryProfile).Assembly));
+
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ICategoryService, CategoryService>();
             //services.AddScoped<DataSeeder>();
             //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

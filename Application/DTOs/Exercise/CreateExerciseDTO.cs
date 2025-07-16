@@ -10,10 +10,6 @@ namespace Application.DTOs.Exercise
 {
     public class CreateExerciseDTO
     {
-        public int ExerciseCategoryId { get; set; }
-        public int PositionCategoryId { get; set; }
-        public int ImageId { get; set; }
-        public int VideoId { get; set; }
         [Required]
         [StringLength(10, ErrorMessage = "Exercise Name should be 10 characters minimum")]
         public string Name { get; set; } = string.Empty;

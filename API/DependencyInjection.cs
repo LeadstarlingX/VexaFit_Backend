@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
@@ -11,6 +12,8 @@ namespace API
         public static IServiceCollection AddAPI(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddEndpointsApiExplorer();
+
+            services.AddValidatorsFromAssembly(typeof(Application.IAppServices.Common.IService<,,>).Assembly);
 
             services.AddControllers();
 
@@ -76,8 +79,7 @@ namespace API
             services.AddCors(options => {
                 options.AddPolicy("DevCors", policy => {
                     policy.WithOrigins(
-                            "https://localhost:52324", // React port
-                            "https://localhost:7070"   // API port
+                            "https://localhost:7040"   // API port
                         )
                         .AllowAnyHeader()
                         .AllowAnyMethod()

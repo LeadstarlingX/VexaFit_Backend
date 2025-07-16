@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs.Authentication;
+using Application.IAppServices.Authentication;
 using Application.IRepository;
 using Domain.Common;
 using Infrastructure.Context;
@@ -15,10 +16,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using IAuthenticationService = Application.IAppServices.Authentication.IAuthenticationService;
 
 namespace Infrastructure.AppServices.Athuenticaion
 {
-    public class AuthenticationService
+    public class AuthenticationService : IAuthenticationService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -51,30 +53,30 @@ namespace Infrastructure.AppServices.Athuenticaion
             if (!authenticateResult.Succeeded)
                 throw new Exception("User Not found");
 
-            ApplicationUser? customer = null;
+            ApplicationUser? user = null;
             var identifierClaim = authenticateResult.Principal.FindFirst(claim => claim.Type == ClaimTypes.NameIdentifier);
 
-            if (identifierClaim != null && int.TryParse(identifierClaim.Value, out int customerId))
+            if (identifierClaim != null && int.TryParse(identifierClaim.Value, out int userId))
             {
-                customer = await _userManager.FindByIdAsync(customerId.ToString());
+                user = await _userManager.FindByIdAsync(userId.ToString());
             }
 
-            if (customer is null)
+            if (user is null)
             {
                 throw new Exception("User Not found");
             }
 
-            if (!customer.IsActive)
+            if (!user.IsActive)
             {
                 throw new Exception("Deactivated User");
             }
 
-            var jwtToken = await GenerateJwtToken(customer);
+            var jwtToken = await GenerateJwtToken(user);
             return new UserProfileDTO
             {
-                Id = customer.Id,
-                Username = customer.UserName ?? string.Empty,
-                Email = customer.Email ?? string.Empty,
+                Id = user.Id,
+                Username = user.UserName ?? string.Empty,
+                Email = user.Email ?? string.Empty,
                 Token = jwtToken,
             };
         }
@@ -88,19 +90,20 @@ namespace Infrastructure.AppServices.Athuenticaion
             if (!authenticateResult.Succeeded)
                 return false;
 
-            ApplicationUser? customer = null;
+            ApplicationUser? user = null;
             var identifierClaim = authenticateResult.Principal.FindFirst(claim => claim.Type == ClaimTypes.NameIdentifier);
 
-            if (identifierClaim != null && int.TryParse(identifierClaim.Value, out int customerId))
+            if (identifierClaim != null && int.TryParse(identifierClaim.Value, out int userId))
             {
-                customer = await _userManager.FindByIdAsync(customerId.ToString());
-                if (customer is null)
+                user = await _userManager.FindByIdAsync(userId.ToString());
+                if (user is null)
                     return false;
             }
-            var isAdmin = await _userManager.IsInRoleAsync(customer!, DefaultSettings.AdminRoleName);
+            var isAdmin = await _userManager.IsInRoleAsync(user!, DefaultSettings.AdminRoleName);
 
             return isAdmin;
         }
+
         public async Task<UserProfileDTO> LoginAsync(LoginDTO loginDto)
         {
             var existingUser = await _userManager.FindByEmailAsync(loginDto.Email);
@@ -131,7 +134,42 @@ namespace Infrastructure.AppServices.Athuenticaion
             await _signInManager.SignOutAsync();
         }
 
-        public async Task<long> RegisterAsync(RegisterDTO dto, bool fromAdmin = false)
+        //public async Task<long> RegisterAsync(RegisterDTO dto, bool fromAdmin = false)
+        //{
+        //    var user = new ApplicationUser
+        //    {
+        //        UserName = dto.Username,
+        //        Email = dto.Email
+        //    };
+
+        //    var result = await _userManager.CreateAsync(user, dto.Password);
+
+        //    if (result.Succeeded)
+        //    {
+        //        await _userManager.AddToRoleAsync(user, dto.Role.ToString());
+        //        var isAdmin = await IsAdmin();
+        //        if (!isAdmin)
+        //        {
+        //            var customer = new CreateCustomerDto()
+        //            {
+        //                Id = user.Id,
+        //                FirstName = dto.FirstName,
+        //                LastName = dto.LastName,
+        //                Country = dto.Address,
+        //                UserDto = dto
+
+        //            };
+
+        //            var customerResult = await _customerService.CreateCustomerAsync(customer);
+
+        //        }
+        //        return user.Id;
+        //    }
+
+        //    throw new NotImplementedException();
+        //}
+
+        public Task<long> RegisterAsync(RegisterDTO dto)
         {
             throw new NotImplementedException();
         }

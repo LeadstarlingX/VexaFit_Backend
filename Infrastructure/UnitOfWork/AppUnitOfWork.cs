@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.IRepository;
 using Application.IUnitOfWork;
+using Domain.Entities.Common;
 using Infrastructure.Context;
 using Infrastructure.Repository;
 
@@ -20,7 +21,7 @@ namespace Infrastructure.UnitOfWork
             _context = context;
         }
 
-        public IAppRepository<T> Repository<T>() where T : class
+        public IAppRepository<T> Repository<T>() where T : BaseEntity
         {
             if (_repositories.ContainsKey(typeof(T)))
             {

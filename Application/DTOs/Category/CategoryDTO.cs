@@ -16,6 +16,5 @@ namespace Application.DTOs.Category
     {
         public string Name { get; set; } = string.Empty;
         public CategoryTypeEnum Type { get; set; }
-        public ICollection<ExerciseDTO>? Exercises { get; set; } = [];
     }
 }

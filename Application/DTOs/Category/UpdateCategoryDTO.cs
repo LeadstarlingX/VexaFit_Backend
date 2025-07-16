@@ -10,8 +10,8 @@ namespace Application.DTOs.Category
 {
     public class UpdateCategoryDTO : BaseDTO<int>
     {
-        public string Name { get; set; } = string.Empty;
-        public CategoryTypeEnum Type { get; set; }
+        public string? Name { get; set; } = string.Empty;
+        public CategoryTypeEnum? Type { get; set; }
 
     }
 }

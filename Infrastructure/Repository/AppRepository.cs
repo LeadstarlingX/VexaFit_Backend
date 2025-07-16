@@ -5,13 +5,15 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Application.IRepository;
+using Domain.Entities.Common;
+using EFCore.BulkExtensions;
 using Infrastructure.Context;
 using Infrastructure.Extenstion;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repository
 {
-    public class AppRepository<T>(ApplicationDbContext context) : IAppRepository<T> where T : class
+    public class AppRepository<T>(ApplicationDbContext context) : IAppRepository<T> where T : BaseEntity
     {
         private readonly ApplicationDbContext _context = context;
         private readonly DbSet<T> _entities = context.Set<T>();
@@ -156,6 +158,12 @@ namespace Infrastructure.Repository
             return newEntity.Entity;
         }
 
+        public async Task BulkInsertAsync(IEnumerable<T> entities)
+        {
+            await _context.BulkInsertAsync(entities);
+        }
+
+
         public async Task<T> UpdateAsync(T entity, bool asNoTracking = false)
         {
             _context.Update(entity);
@@ -163,12 +171,26 @@ namespace Infrastructure.Repository
             return entity;
         }
 
+        public async Task BulkUpdateAsync(IEnumerable<T> entities)
+        {
+            await _context.BulkUpdateAsync(entities);
+        }
+
+
         public async Task<T> RemoveAsync(T entity, bool asNoTracking = false)
         {
             _entities.Remove(entity);
             await _context.SaveChangesAsync();
             return entity;
         }
+
+        public async Task BulkRemoveAsync(IEnumerable<int> ids)
+        {
+            await _entities
+                  .Where(entity => ids.Contains(entity.Id))
+                  .ExecuteDeleteAsync();
+        }
+
 
         #endregion
 
