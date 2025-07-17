@@ -30,9 +30,6 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ExerciseId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -41,8 +38,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExerciseId");
 
                     b.ToTable("Categories");
                 });
@@ -171,6 +166,9 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("Counts")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -180,9 +178,15 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(21)
                         .HasColumnType("character varying(21)");
 
+                    b.Property<int>("DurationSeconds")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("Sets")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -201,16 +205,7 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Counts")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("DurationSeconds")
-                        .HasColumnType("integer");
-
                     b.Property<int>("ExerciseId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Sets")
                         .HasColumnType("integer");
 
                     b.Property<int>("WorkoutId")
@@ -373,10 +368,6 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -521,13 +512,6 @@ namespace Infrastructure.Migrations
                     b.HasDiscriminator().HasValue("PredefinedWorkout");
                 });
 
-            modelBuilder.Entity("Domain.Entities.AppEntities.Category", b =>
-                {
-                    b.HasOne("Domain.Entities.AppEntities.Exercise", null)
-                        .WithMany("Categories")
-                        .HasForeignKey("ExerciseId");
-                });
-
             modelBuilder.Entity("Domain.Entities.AppEntities.ExerciseCategory", b =>
                 {
                     b.HasOne("Domain.Entities.AppEntities.Category", "Category")
@@ -537,7 +521,7 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.AppEntities.Exercise", "Exercise")
-                        .WithMany()
+                        .WithMany("ExerciseCategories")
                         .HasForeignKey("ExerciseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -677,7 +661,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.AppEntities.Exercise", b =>
                 {
-                    b.Navigation("Categories");
+                    b.Navigation("ExerciseCategories");
 
                     b.Navigation("Images");
 

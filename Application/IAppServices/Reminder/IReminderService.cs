@@ -8,7 +8,8 @@ using Application.IAppServices.Common;
 
 namespace Application.IAppServices.Reminder
 {
-    public interface IReminderService : IService<ReminderDTO, CreateReminderDTO, UpdateReminderDTO>
+    public interface IReminderService : IService<ReminderDTO, CreateReminderDTO,
+        UpdateReminderDTO, GetReminderDTO>
     {
     }
 }

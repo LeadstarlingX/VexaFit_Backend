@@ -27,7 +27,6 @@ namespace API
                 app.UseHsts();
             }
 
-            dataSeeder.SeedData();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

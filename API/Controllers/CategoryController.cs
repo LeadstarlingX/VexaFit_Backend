@@ -26,9 +26,9 @@ namespace API.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(ApiResponse<List<CategoryDTO>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllCategories()
+        public async Task<IActionResult> GetAllCategories([FromQuery] GetCategoryDTO dto)
         {
-            var categories = await _categoryService.GetAllAsync();
+            var categories = await _categoryService.GetAllAsync(dto);
             return new RawJsonActionResult(
                 _jsonFieldsSerializer.Serialize(
                     new ApiResponse(true, "", StatusCodes.Status200OK, categories),

@@ -24,7 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Validators\" />
+    <Folder Include="Validators\Category\" />
+    <Folder Include="Validators\Exercise\" />
   </ItemGroup>
 
 </Project>

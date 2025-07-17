@@ -30,7 +30,7 @@ namespace Infrastructure.AppServices.MotivationSentnce
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<MotivationSentenceDTO>> GetAllAsync()
+        public Task<IEnumerable<MotivationSentenceDTO>> GetAllAsync(GetMotivationSentenceDTO dto)
         {
             throw new NotImplementedException();
         }

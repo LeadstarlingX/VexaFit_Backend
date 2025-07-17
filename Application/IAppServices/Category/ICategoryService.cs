@@ -8,7 +8,7 @@ using Application.IAppServices.Common;
 
 namespace Application.IAppServices.Category
 {
-    public interface ICategoryService : IService<CategoryDTO, CreateCategoryDTO, UpdateCategoryDTO>
+    public interface ICategoryService : IService<CategoryDTO, CreateCategoryDTO, UpdateCategoryDTO, GetCategoryDTO>
     {
 
     }

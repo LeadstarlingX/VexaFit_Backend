@@ -75,7 +75,7 @@ namespace Infrastructure.AppServices.Athuenticaion
             return new UserProfileDTO
             {
                 Id = user.Id,
-                Username = user.UserName ?? string.Empty,
+                UserName = user.UserName ?? string.Empty,
                 Email = user.Email ?? string.Empty,
                 Token = jwtToken,
             };
@@ -101,7 +101,7 @@ namespace Infrastructure.AppServices.Athuenticaion
             return new UserProfileDTO
             {
                 Id = existingUser.Id,
-                Username = existingUser.UserName ?? string.Empty,
+                UserName = existingUser.UserName ?? string.Empty,
                 Email = existingUser.Email ?? string.Empty,
                 Token = jwtToken,
             };
@@ -116,7 +116,7 @@ namespace Infrastructure.AppServices.Athuenticaion
         {
             var user = new ApplicationUser
             {
-                UserName = dto.Username,
+                UserName = dto.UserName,
                 Email = dto.Email
             };
 
@@ -167,7 +167,7 @@ namespace Infrastructure.AppServices.Athuenticaion
                 var claims = new List<Claim>
                 {
                     new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new(ClaimTypes.Name, user.Username ?? string.Empty),
+                    new(ClaimTypes.Name, user.UserName ?? string.Empty),
                     new(ClaimTypes.Email, user.Email ?? string.Empty),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };

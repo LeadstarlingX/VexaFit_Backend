@@ -31,7 +31,6 @@ namespace Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    Username = table.Column<string>(type: "text", nullable: false),
                     GenderEnum = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -55,6 +54,20 @@ namespace Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -199,6 +212,9 @@ namespace Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
+                    Counts = table.Column<int>(type: "integer", nullable: false),
+                    Sets = table.Column<int>(type: "integer", nullable: false),
+                    DurationSeconds = table.Column<int>(type: "integer", nullable: false),
                     Discriminator = table.Column<string>(type: "character varying(21)", maxLength: 21, nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -215,23 +231,29 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Categories",
+                name: "ExerciseCategories",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    ExerciseId = table.Column<int>(type: "integer", nullable: true)
+                    CategoryId = table.Column<int>(type: "integer", nullable: false),
+                    ExerciseId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.PrimaryKey("PK_ExerciseCategories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Categories_Exercises_ExerciseId",
+                        name: "FK_ExerciseCategories_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ExerciseCategories_Exercises_ExerciseId",
                         column: x => x.ExerciseId,
                         principalTable: "Exercises",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -283,10 +305,7 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     WorkoutId = table.Column<int>(type: "integer", nullable: false),
-                    ExerciseId = table.Column<int>(type: "integer", nullable: false),
-                    Counts = table.Column<int>(type: "integer", nullable: false),
-                    Sets = table.Column<int>(type: "integer", nullable: false),
-                    DurationSeconds = table.Column<int>(type: "integer", nullable: false)
+                    ExerciseId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -329,32 +348,6 @@ namespace Infrastructure.Migrations
                         name: "FK_WorkoutReminders_Workouts_WorkoutId",
                         column: x => x.WorkoutId,
                         principalTable: "Workouts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExerciseCategories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CategoryId = table.Column<int>(type: "integer", nullable: false),
-                    ExerciseId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExerciseCategories", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ExerciseCategories_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExerciseCategories_Exercises_ExerciseId",
-                        column: x => x.ExerciseId,
-                        principalTable: "Exercises",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -415,11 +408,6 @@ namespace Infrastructure.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Categories_ExerciseId",
-                table: "Categories",
-                column: "ExerciseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExerciseCategories_CategoryId",
@@ -516,10 +504,10 @@ namespace Infrastructure.Migrations
                 name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "WorkoutReminders");
+                name: "Exercises");
 
             migrationBuilder.DropTable(
-                name: "Exercises");
+                name: "WorkoutReminders");
 
             migrationBuilder.DropTable(
                 name: "Workouts");

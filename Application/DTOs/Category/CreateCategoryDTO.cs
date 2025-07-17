@@ -10,10 +10,7 @@ namespace Application.DTOs.Category
 {
     public class CreateCategoryDTO
     {
-        [Required]
-        [StringLength(10, ErrorMessage = "Category name should be 10 character minimum")]
         public string Name { get; set; } = string.Empty;
-        [Required]
         public CategoryTypeEnum TypeEnum { get; set; }
 
     }

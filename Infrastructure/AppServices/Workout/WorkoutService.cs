@@ -30,7 +30,7 @@ namespace Infrastructure.AppServices.Workout
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<WorkoutDTO>> GetAllAsync()
+        public Task<IEnumerable<WorkoutDTO>> GetAllAsync(GetWorkoutDTO dto)
         {
             throw new NotImplementedException();
         }

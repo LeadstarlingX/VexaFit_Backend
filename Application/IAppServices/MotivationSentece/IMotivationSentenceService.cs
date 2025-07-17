@@ -9,7 +9,7 @@ using Application.IAppServices.Common;
 namespace Application.IAppServices.MotivationSentece
 {
     public interface IMotivationSentenceService : IService<MotivationSentenceDTO,
-        CreateMotivationSentenceDTO, UpdateMotivationSentenceDTO>
+        CreateMotivationSentenceDTO, UpdateMotivationSentenceDTO, GetMotivationSentenceDTO>
     {
     }
 }

@@ -30,7 +30,7 @@ namespace Infrastructure.AppServices.Reminder
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ReminderDTO>> GetAllAsync()
+        public Task<IEnumerable<ReminderDTO>> GetAllAsync(GetReminderDTO dto)
         {
             throw new NotImplementedException();
         }

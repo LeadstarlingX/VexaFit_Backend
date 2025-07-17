@@ -13,7 +13,7 @@ namespace API
         {
             services.AddEndpointsApiExplorer();
 
-            services.AddValidatorsFromAssembly(typeof(Application.IAppServices.Common.IService<,,>).Assembly);
+            services.AddValidatorsFromAssembly(typeof(Application.IAppServices.Common.IService<,,,>).Assembly);
 
             services.AddControllers();
 

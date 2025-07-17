@@ -8,7 +8,8 @@ using Application.IAppServices.Common;
 
 namespace Application.IAppServices.Workout
 {
-    public interface IWorkoutService : IService<WorkoutDTO, CreateWorkoutDTO, UpdateWorkoutDTO>
+    public interface IWorkoutService : IService<WorkoutDTO, CreateWorkoutDTO,
+        UpdateWorkoutDTO, GetWorkoutDTO>
     {
     }
 }

@@ -16,7 +16,7 @@ namespace Domain.Entities.AppEntities
         public virtual ICollection<WorkoutExercise> WorkoutExercises { get; set; } = [];
         public virtual ICollection<Image> Images { get; set; } = [];
         public virtual ICollection<Video> Videos { get; set; } = [];
-        public virtual ICollection<Category> Categories { get; set; } = [];
+        public virtual ICollection<ExerciseCategory> ExerciseCategories { get; set; } = [];
 
 
     }

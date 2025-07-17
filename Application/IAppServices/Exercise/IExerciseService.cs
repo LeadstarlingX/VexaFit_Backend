@@ -8,7 +8,7 @@ using Application.DTOs.Exercise;
 using Application.IAppServices.Common;
 namespace Application.IAppServices.Exercise
 {
-    public interface IExerciseService : IService<ExerciseDTO, CreateExerciseDTO, UpdateExerciseDTO>
+    public interface IExerciseService : IService<ExerciseDTO, CreateExerciseDTO, UpdateExerciseDTO, GetExerciseDTO>
     {
 
     }

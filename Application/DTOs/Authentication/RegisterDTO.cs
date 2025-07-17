@@ -13,7 +13,7 @@ namespace Application.DTOs.Authentication
     {
         [Required]
         [Display(Name = "User Name")]
-        public required string Username { get; set; }
+        public required string UserName { get; set; }
 
         [Required]
         [EmailAddress]

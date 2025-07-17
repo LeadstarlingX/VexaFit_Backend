@@ -12,6 +12,7 @@ using Infrastructure.Context;
 using Microsoft.AspNetCore.Identity;
 using Domain.Entities.AppEntities;
 using CategoryEntity = Domain.Entities.AppEntities.Category;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.AppServices.Category
 {
@@ -28,6 +29,27 @@ namespace Infrastructure.AppServices.Category
             _userManager = userManager;
             _mapper = mapper;
         }
+
+
+        public async Task<CategoryDTO> GetByIdAsync(int id)
+        {
+            var entity = (await _categoryRepository.FindWithAllIncludeAsync(x => x.Id == id)).FirstOrDefault();
+            return _mapper.Map<CategoryDTO>(entity);
+        }
+
+        public async Task<IEnumerable<CategoryDTO>> GetAllAsync(GetCategoryDTO dto)
+        {
+            var query = _categoryRepository.GetAllWithAllInclude();
+            query = query.Include(x => x.ExerciseCategories).ThenInclude(x => x.Exercise);
+            if(dto.Name != null)
+                query = query.Where(x => x.Name.Contains(dto.Name));
+            if (dto.Type != null)
+                query = query.Where(x => x.Type == dto.Type);
+
+            var entites = await query.AsNoTracking().ToListAsync();
+            return _mapper.Map<IEnumerable<CategoryDTO>>(entites);
+        }
+
 
 
         public async Task<CategoryDTO> CreateAsync(CreateCategoryDTO dto)
@@ -47,19 +69,6 @@ namespace Infrastructure.AppServices.Category
         }
 
 
-        public async Task<IEnumerable<CategoryDTO>> GetAllAsync()
-        {
-            var entity = await _categoryRepository.GetAllWithAllIncludeAsync();
-
-            return _mapper.Map<IEnumerable<CategoryDTO>>(entity);
-        }
-
-        public async Task<CategoryDTO> GetByIdAsync(int id)
-        {
-            var entity = (await _categoryRepository.FindAsync(x => x.Id == id)).FirstOrDefault();
-            return _mapper.Map<CategoryDTO>(entity);
-        }
-
 
         public async Task<CategoryDTO> UpdateAsync(UpdateCategoryDTO dto)
         {
@@ -75,6 +84,7 @@ namespace Infrastructure.AppServices.Category
             return _mapper.Map<IEnumerable<CategoryDTO>>(entities);
         }
         
+
 
         public async Task DeleteAsync(int id)
         {
