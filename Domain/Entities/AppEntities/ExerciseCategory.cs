@@ -9,7 +9,6 @@ namespace Domain.Entities.AppEntities
 {
     public  class ExerciseCategory : BaseEntity
     {
-        public int ExerciseCategoryId { get; set; }
         public int CategoryId { get; set; }
         public int ExerciseId { get; set; }
 

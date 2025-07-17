@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Context
 {
-    public class IdentityAppDbContext(DbContextOptions<IdentityAppDbContext> options) : IdentityDbContext<ApplicationUser>(options)
-    {
-        internal DbSet<ApplicationUser> Users { get; set; }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(IdentityAppDbContext).Assembly);
-        }
+    //public class IdentityAppDbContext(DbContextOptions<IdentityAppDbContext> options) : IdentityDbContext<ApplicationUser>(options)
+    //{
+    //    internal DbSet<ApplicationUser> Users { get; set; }
+    //    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    //    {
+    //        base.OnModelCreating(modelBuilder);
+    //        modelBuilder.ApplyConfigurationsFromAssembly(typeof(IdentityAppDbContext).Assembly);
+    //    }
 
-    }
+    //}
 }

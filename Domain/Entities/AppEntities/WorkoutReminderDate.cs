@@ -9,7 +9,6 @@ namespace Domain.Entities.AppEntities
 {
     public class WorkoutReminderDate : BaseEntity
     {
-        public int WorkoutReminderDateId { get; set; }
         public int WorkoutReminderId { get; set; }
 
 

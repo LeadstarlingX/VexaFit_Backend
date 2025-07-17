@@ -32,6 +32,5 @@ namespace Application.DTOs.Authentication
         [Required]
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public RoleEnum Role { get; set; } = RoleEnum.Trainee;
-        public string Address { get; set; } = string.Empty;
     }
 }

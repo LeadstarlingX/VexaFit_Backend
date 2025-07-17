@@ -8,6 +8,5 @@ namespace Domain.Entities.AppEntities
 {
     public class PredefinedWorkout : Workout
     {
-        public int PredefinedWorkoutId { get; set; }
     }
 }

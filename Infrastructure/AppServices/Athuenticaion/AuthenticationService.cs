@@ -56,9 +56,9 @@ namespace Infrastructure.AppServices.Athuenticaion
             ApplicationUser? user = null;
             var identifierClaim = authenticateResult.Principal.FindFirst(claim => claim.Type == ClaimTypes.NameIdentifier);
 
-            if (identifierClaim != null && int.TryParse(identifierClaim.Value, out int userId))
+            if (identifierClaim != null)
             {
-                user = await _userManager.FindByIdAsync(userId.ToString());
+                user = await _userManager.FindByIdAsync(identifierClaim.Value.ToString());
             }
 
             if (user is null)
@@ -81,28 +81,6 @@ namespace Infrastructure.AppServices.Athuenticaion
             };
         }
 
-        public async Task<bool> IsAdmin()
-        {
-            if (_httpContextAccessor.HttpContext is null)
-                return false;
-
-            var authenticateResult = await _httpContextAccessor.HttpContext.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
-            if (!authenticateResult.Succeeded)
-                return false;
-
-            ApplicationUser? user = null;
-            var identifierClaim = authenticateResult.Principal.FindFirst(claim => claim.Type == ClaimTypes.NameIdentifier);
-
-            if (identifierClaim != null && int.TryParse(identifierClaim.Value, out int userId))
-            {
-                user = await _userManager.FindByIdAsync(userId.ToString());
-                if (user is null)
-                    return false;
-            }
-            var isAdmin = await _userManager.IsInRoleAsync(user!, DefaultSettings.AdminRoleName);
-
-            return isAdmin;
-        }
 
         public async Task<UserProfileDTO> LoginAsync(LoginDTO loginDto)
         {
@@ -134,44 +112,48 @@ namespace Infrastructure.AppServices.Athuenticaion
             await _signInManager.SignOutAsync();
         }
 
-        //public async Task<long> RegisterAsync(RegisterDTO dto, bool fromAdmin = false)
-        //{
-        //    var user = new ApplicationUser
-        //    {
-        //        UserName = dto.Username,
-        //        Email = dto.Email
-        //    };
-
-        //    var result = await _userManager.CreateAsync(user, dto.Password);
-
-        //    if (result.Succeeded)
-        //    {
-        //        await _userManager.AddToRoleAsync(user, dto.Role.ToString());
-        //        var isAdmin = await IsAdmin();
-        //        if (!isAdmin)
-        //        {
-        //            var customer = new CreateCustomerDto()
-        //            {
-        //                Id = user.Id,
-        //                FirstName = dto.FirstName,
-        //                LastName = dto.LastName,
-        //                Country = dto.Address,
-        //                UserDto = dto
-
-        //            };
-
-        //            var customerResult = await _customerService.CreateCustomerAsync(customer);
-
-        //        }
-        //        return user.Id;
-        //    }
-
-        //    throw new NotImplementedException();
-        //}
-
-        public Task<long> RegisterAsync(RegisterDTO dto)
+        public async Task<string> RegisterAsync(RegisterDTO dto)
         {
-            throw new NotImplementedException();
+            var user = new ApplicationUser
+            {
+                UserName = dto.Username,
+                Email = dto.Email
+            };
+
+            var result = await _userManager.CreateAsync(user, dto.Password);
+
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, dto.Role.ToString());
+                
+                return user.Id;
+            }
+            var errorMessages = string.Join(Environment.NewLine, result.Errors.Select(e => e.Description));
+            throw new InvalidOperationException($"User creation failed: {errorMessages}");
+
+        }
+
+        public async Task<bool> IsAdmin()
+        {
+            if (_httpContextAccessor.HttpContext is null)
+                return false;
+
+            var authenticateResult = await _httpContextAccessor.HttpContext.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
+            if (!authenticateResult.Succeeded)
+                return false;
+
+            ApplicationUser? user = null;
+            var identifierClaim = authenticateResult.Principal.FindFirst(claim => claim.Type == ClaimTypes.NameIdentifier);
+
+            if (identifierClaim != null && int.TryParse(identifierClaim.Value, out int userId))
+            {
+                user = await _userManager.FindByIdAsync(userId.ToString());
+                if (user is null)
+                    return false;
+            }
+            var isAdmin = await _userManager.IsInRoleAsync(user!, DefaultSettings.AdminRoleName);
+
+            return isAdmin;
         }
 
         private async Task<TokenDTO> GenerateJwtToken(ApplicationUser user)
@@ -209,7 +191,7 @@ namespace Infrastructure.AppServices.Athuenticaion
 
                 return new TokenDTO()
                 {
-                    RefreshToken = jwtToken,
+                    JwtToken = jwtToken,
                     Success = true,
                     Roles = userRoles,
                 };
@@ -218,6 +200,34 @@ namespace Infrastructure.AppServices.Athuenticaion
             {
                 throw;
             }
+        }
+
+        public async Task<string?> RefreshToken(string jwtToken)
+        {
+            string id = RetrieveUserID();
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+                return null;
+
+            user.RefreshToken = Guid.NewGuid().ToString();
+            await _userManager.UpdateAsync(user);
+            return (await GenerateJwtToken(user)).JwtToken;
+        }
+
+        public string RetrieveUserID()
+        {
+            string authorizationHeader = _httpContextAccessor.HttpContext!.Request.Headers.Authorization!;
+            if (authorizationHeader == null)
+                throw new Exception("No authorization was found in the header");
+            string token = authorizationHeader.Substring("Bearer".Length).Trim();
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(token);
+            Claim userIdClaim = jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == "userId")!;
+
+            if (userIdClaim == null)
+                throw new Exception("UserId not found in the token.");
+
+            return userIdClaim.Value;
         }
 
     }

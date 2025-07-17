@@ -9,9 +9,6 @@ namespace Domain.Entities.AppEntities
 {
     public class MotivationSentence : BaseEntity
     {
-        public int SentenceId { get; set; }
-
-
         public string Text { get; set; } = string.Empty;
         public bool IsActive { get; set; }
     }

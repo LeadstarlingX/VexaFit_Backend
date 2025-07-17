@@ -2,6 +2,7 @@
 using Application;
 using Infrastructure;
 using API;
+using Infrastructure.Seeds;
 
 namespace API
 {
@@ -18,7 +19,7 @@ namespace API
         }
 
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataSeeder dataSeeder)
         {
             if (env.IsDevelopment())
             {
@@ -26,7 +27,7 @@ namespace API
                 app.UseHsts();
             }
 
-            //dataSeeder.SeedData();
+            dataSeeder.SeedData();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

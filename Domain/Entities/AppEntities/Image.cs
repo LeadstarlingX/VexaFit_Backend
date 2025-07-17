@@ -9,7 +9,6 @@ namespace Domain.Entities.AppEntities
 {
     public class Image : BaseEntity
     {
-        public int ImageId { get; set; }
         public int ExerciseId { get; set; }
 
         public string Url { get; set; } = string.Empty;

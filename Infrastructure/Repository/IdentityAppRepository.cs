@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repository
 {
-    public class IdentityRepository<T>(IdentityAppDbContext context) : IIdentityAppRepository<T> where T : class
+    public class IdentityRepository<T>(ApplicationDbContext context) : IIdentityAppRepository<T> where T : class
     {
-        private readonly IdentityAppDbContext _context = context;
+        private readonly ApplicationDbContext _context = context;
         private readonly DbSet<T> _entities = context.Set<T>();
 
         public IQueryable<T> Table => _entities;

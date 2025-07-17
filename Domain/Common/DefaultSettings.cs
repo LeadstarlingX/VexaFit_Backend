@@ -9,6 +9,7 @@ namespace Domain.Common
     public class DefaultSettings
     {
         public const string AdminRoleName = "Admin";
+        public const string TraineeRoleName = "Trainee";
 
         public const string DefaultAdminOneUserName = "Saad";
         public const string DefaultAdminOneFName = "Saad";

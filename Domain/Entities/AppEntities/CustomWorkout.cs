@@ -8,8 +8,7 @@ namespace Domain.Entities.AppEntities
 {
     public class CustomWorkout : Workout
     {
-        public int CustomWorkoutId { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
 
         public DateTime CreationDate { get; set; }

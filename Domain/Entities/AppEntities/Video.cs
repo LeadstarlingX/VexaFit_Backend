@@ -9,7 +9,6 @@ namespace Domain.Entities.AppEntities
 {
     public class Video : BaseEntity
     {
-        public int VideoId { get; set; }
         public int ExerciseId { get; set; }
 
 

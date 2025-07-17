@@ -5,14 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.Entities.AppEntities;
 using Infrastructure.Converters;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Context
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser, ApplicationRole, string>(options)
     {
         #region Tables
-        internal DbSet<ApplicationUser> Users { get; set; }
+        public override DbSet<ApplicationRole> Roles { get; set; }
+        public override DbSet<ApplicationUser> Users { get; set; }
         internal DbSet<Category> Categories { get; set; }
         internal DbSet<CustomWorkout> CustomWorkouts { get; set; }
         internal DbSet<Exercise> Exercises { get; set; }
@@ -25,15 +27,14 @@ namespace Infrastructure.Context
         internal DbSet<WorkoutExercise> WorkoutExercises { get; set; }
         internal DbSet<WorkoutReminder> WorkoutReminders { get; set; }
         internal DbSet<WorkoutReminderDate> WorkoutReminderDates { get; set; }
-        
-        
-
 
 
         #endregion
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
         }

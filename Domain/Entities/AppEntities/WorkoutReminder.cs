@@ -10,8 +10,7 @@ namespace Domain.Entities.AppEntities
 {
     public class WorkoutReminder : BaseEntity
     {
-        public int WorkoutReminderId { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public int WorkoutId { get; set; }
         
 

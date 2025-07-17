@@ -11,9 +11,6 @@ namespace Domain.Entities.AppEntities
 {
     public class Category : BaseEntity
     {
-        public int CategoryId { get; set; }
-
-
         public string Name { get; set; } = string.Empty;
         public CategoryTypeEnum Type { get; set; }
         

@@ -10,7 +10,6 @@ namespace Domain.Entities.AppEntities
 {
     public class WorkoutExercise : BaseEntity
     {
-        public int WorkoutExerciseId { get; set; }
         public int WorkoutId { get; set; }
         public int ExerciseId { get; set; }
 

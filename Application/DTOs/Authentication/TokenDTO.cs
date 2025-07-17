@@ -8,7 +8,7 @@ namespace Application.DTOs.Authentication
 {
     public class TokenDTO
     {
-        public string RefreshToken { get; set; } = string.Empty;
+        public string JwtToken { get; set; } = string.Empty;
         public bool Success { get; set; }
         public IList<string> Roles { get; set; } = []!;
     }

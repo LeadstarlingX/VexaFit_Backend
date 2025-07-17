@@ -9,9 +9,6 @@ namespace Domain.Entities.AppEntities
 {
     public class Workout : BaseEntity
     {
-        public int WorkoutId { get; set; }
-
-
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
 

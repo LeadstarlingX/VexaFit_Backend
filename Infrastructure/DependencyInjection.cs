@@ -14,6 +14,7 @@ using Infrastructure.AppServices.Athuenticaion;
 using Infrastructure.AppServices.Category;
 using Infrastructure.Context;
 using Infrastructure.Repository;
+using Infrastructure.Seeds;
 using Infrastructure.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -43,7 +44,7 @@ namespace Infrastructure
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ICategoryService, CategoryService>();
-            //services.AddScoped<DataSeeder>();
+            services.AddScoped<DataSeeder>();
             //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             //services.AddScoped<IAuthenticationService, AuthenticationService>();
 
@@ -63,7 +64,7 @@ namespace Infrastructure
                 options.Password.RequireDigit = true;
                 options.Password.RequireNonAlphanumeric = true;
             })
-            .AddEntityFrameworkStores<IdentityAppDbContext>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>(TokenOptions.DefaultProvider);
 
             return services;
@@ -74,8 +75,8 @@ namespace Infrastructure
             services.AddDbContext<ApplicationDbContext>(options =>
              options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDbContext<IdentityAppDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("IdentityConnection")));
+            //services.AddDbContext<IdentityAppDbContext>(options =>
+            //    options.UseNpgsql(configuration.GetConnectionString("IdentityConnection")));
 
             return services;
         }
