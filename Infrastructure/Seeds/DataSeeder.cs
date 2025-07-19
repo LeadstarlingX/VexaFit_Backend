@@ -22,33 +22,30 @@ namespace Infrastructure.Seeds
         private readonly RoleManager<ApplicationRole> _roleManager = roleManeger;
         public async Task SeedAllAsync()
         {
-            // Using a single transaction for all seeding operations is more efficient.
             if (await _context.Database.CanConnectAsync())
             {
                 await SeedRolesAsync();
                 await SeedAdminUserAsync();
+                await SeedTraineeUserAsync();
                 await ClearAndReseedContentAsync();
             }
         }
 
-
         private async Task ClearAndReseedContentAsync()
         {
-            // 1. Clear existing content data in the correct order to respect foreign keys.
+            // Clears and reseeds content data for development
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"WorkoutExercises\"");
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"Workouts\"");
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"ExerciseCategories\"");
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"Exercises\"");
-            // Note: Table names might need to be adjusted based on your DB schema (e.g., "public.Workouts")
 
-            // 2. Reseed the cleared data.
             await SeedExercisesAndCategoriesAsync();
             await SeedWorkoutsAsync();
         }
 
         private async Task SeedRolesAsync()
         {
-            if (!_context.Roles.Any())
+            if (!await _context.Roles.AnyAsync())
             {
                 await _roleManager.CreateAsync(new ApplicationRole { Name = DefaultSettings.AdminRoleName });
                 await _roleManager.CreateAsync(new ApplicationRole { Name = DefaultSettings.TraineeRoleName });
@@ -65,12 +62,10 @@ namespace Infrastructure.Seeds
                     UserName = DefaultSettings.DefaultAdminOneUserName,
                     PhoneNumber = DefaultSettings.DefaultAdminOnePhone,
                     PhoneNumberConfirmed = true,
-                    EmailConfirmed = true, // Confirm email directly
+                    EmailConfirmed = true,
                     IsActive = true
                 };
-
                 var result = await _userManager.CreateAsync(adminUser, DefaultSettings.DefaultAdminPassword);
-
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(adminUser, DefaultSettings.AdminRoleName);
@@ -78,85 +73,82 @@ namespace Infrastructure.Seeds
             }
         }
 
+        private async Task SeedTraineeUserAsync()
+        {
+            if (!await _context.Users.AnyAsync(u => u.Email == DefaultSettings.DefaultTraineeEmail))
+            {
+                var traineeUser = new ApplicationUser
+                {
+                    Email = DefaultSettings.DefaultTraineeEmail,
+                    UserName = DefaultSettings.DefaultTraineeUserName,
+                    EmailConfirmed = true,
+                    IsActive = true
+                };
+                var result = await _userManager.CreateAsync(traineeUser, DefaultSettings.DefaultTraineePassword);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(traineeUser, DefaultSettings.TraineeRoleName);
+                }
+            }
+        }
+
         private async Task SeedExercisesAndCategoriesAsync()
         {
-            // Step 1: Seed Categories if they don't exist
             if (!await _context.Categories.AnyAsync())
             {
                 var categories = new List<Category>
                 {
-                    // Muscle Groups
                     new Category { Name = "Chest", Type = CategoryTypeEnum.MuscleGroup },
-                    new Category { Name = "Back", Type = CategoryTypeEnum.MuscleGroup },
                     new Category { Name = "Legs", Type = CategoryTypeEnum.MuscleGroup },
-                    new Category { Name = "Shoulders", Type = CategoryTypeEnum.MuscleGroup },
                     new Category { Name = "Core", Type = CategoryTypeEnum.MuscleGroup },
-                    // Exercise Types
+                    new Category { Name = "Full Body", Type = CategoryTypeEnum.MuscleGroup },
                     new Category { Name = "Strength", Type = CategoryTypeEnum.ExerciseType },
                     new Category { Name = "Cardio", Type = CategoryTypeEnum.ExerciseType },
-                    new Category { Name = "Stretching", Type = CategoryTypeEnum.ExerciseType },
-                    // Positions
                     new Category { Name = "Standing", Type = CategoryTypeEnum.Position },
-                    new Category { Name = "Lying Down", Type = CategoryTypeEnum.Position },
-                    new Category { Name = "Seated", Type = CategoryTypeEnum.Position }
+                    new Category { Name = "Lying Down", Type = CategoryTypeEnum.Position }
                 };
                 await _context.Categories.AddRangeAsync(categories);
-                await _context.SaveChangesAsync(); // Save here to get Category IDs
+                await _context.SaveChangesAsync();
             }
 
-            // Step 2: Seed Exercises if they don't exist
             if (!await _context.Exercises.AnyAsync())
             {
                 var exercises = new List<Exercise>
                 {
-                    new Exercise { Name = "Push-up", Description = "A classic bodyweight exercise targeting the chest, shoulders, and triceps." },
-                    new Exercise { Name = "Squat", Description = "A fundamental lower body exercise that targets the quadriceps, hamstrings, and glutes." },
-                    new Exercise { Name = "Plank", Description = "An isometric core strength exercise that involves maintaining a position similar to a push-up for the maximum possible time." },
-                    new Exercise { Name = "Jumping Jacks", Description = "A full-body cardio exercise that can be done anywhere." }
+                    new Exercise { Name = "Push-up", Description = "A classic bodyweight exercise." },
+                    new Exercise { Name = "Squat", Description = "A fundamental lower body exercise." },
+                    new Exercise { Name = "Plank", Description = "An isometric core strength exercise." },
+                    new Exercise { Name = "Jumping Jacks", Description = "A full-body cardio exercise." },
+                    new Exercise { Name = "Burpees", Description = "A full-body exercise used in strength training and as an aerobic exercise." }
                 };
                 await _context.Exercises.AddRangeAsync(exercises);
-                await _context.SaveChangesAsync(); // Save here to get Exercise IDs
+                await _context.SaveChangesAsync();
             }
 
-            // Step 3: Seed the relationship in the junction table
             if (!await _context.ExerciseCategories.AnyAsync())
             {
-                // Retrieve the entities we just created to get their IDs
-                var pushup = await _context.Exercises.FirstAsync(e => e.Name == "Push-up");
-                var squat = await _context.Exercises.FirstAsync(e => e.Name == "Squat");
-                var plank = await _context.Exercises.FirstAsync(e => e.Name == "Plank");
-                var jumpingJacks = await _context.Exercises.FirstAsync(e => e.Name == "Jumping Jacks");
+                var exercisesTask = _context.Exercises.ToDictionaryAsync(e => e.Name, e => e);
+                var categoriesTask = _context.Categories.ToDictionaryAsync(c => c.Name, c => c);
 
-                var chestCategory = await _context.Categories.FirstAsync(c => c.Name == "Chest");
-                var legsCategory = await _context.Categories.FirstAsync(c => c.Name == "Legs");
-                var coreCategory = await _context.Categories.FirstAsync(c => c.Name == "Core");
-                var strengthCategory = await _context.Categories.FirstAsync(c => c.Name == "Strength");
-                var cardioCategory = await _context.Categories.FirstAsync(c => c.Name == "Cardio");
-                var lyingDownCategory = await _context.Categories.FirstAsync(c => c.Name == "Lying Down");
-                var standingCategory = await _context.Categories.FirstAsync(c => c.Name == "Standing");
+                await Task.WhenAll(exercisesTask, categoriesTask);
+
+                var exercises = exercisesTask.Result;
+                var categories = categoriesTask.Result;
 
                 var exerciseCategories = new List<ExerciseCategory>
                 {
-                    // Link Push-up to its categories
-                    new ExerciseCategory { ExerciseId = pushup.Id, CategoryId = chestCategory.Id },
-                    new ExerciseCategory { ExerciseId = pushup.Id, CategoryId = strengthCategory.Id },
-                    new ExerciseCategory { ExerciseId = pushup.Id, CategoryId = lyingDownCategory.Id },
-
-                    // Link Squat to its categories
-                    new ExerciseCategory { ExerciseId = squat.Id, CategoryId = legsCategory.Id },
-                    new ExerciseCategory { ExerciseId = squat.Id, CategoryId = strengthCategory.Id },
-                    new ExerciseCategory { ExerciseId = squat.Id, CategoryId = standingCategory.Id },
-
-                    // Link Plank to its categories
-                    new ExerciseCategory { ExerciseId = plank.Id, CategoryId = coreCategory.Id },
-                    new ExerciseCategory { ExerciseId = plank.Id, CategoryId = strengthCategory.Id },
-                    new ExerciseCategory { ExerciseId = plank.Id, CategoryId = lyingDownCategory.Id },
-
-                    // Link Jumping Jacks to its categories
-                    new ExerciseCategory { ExerciseId = jumpingJacks.Id, CategoryId = cardioCategory.Id },
-                    new ExerciseCategory { ExerciseId = jumpingJacks.Id, CategoryId = standingCategory.Id }
+                    new ExerciseCategory { ExerciseId = exercises["Push-up"].Id, CategoryId = categories["Chest"].Id },
+                    new ExerciseCategory { ExerciseId = exercises["Push-up"].Id, CategoryId = categories["Strength"].Id },
+                    new ExerciseCategory { ExerciseId = exercises["Squat"].Id, CategoryId = categories["Legs"].Id },
+                    new ExerciseCategory { ExerciseId = exercises["Squat"].Id, CategoryId = categories["Strength"].Id },
+                    new ExerciseCategory { ExerciseId = exercises["Plank"].Id, CategoryId = categories["Core"].Id },
+                    new ExerciseCategory { ExerciseId = exercises["Plank"].Id, CategoryId = categories["Strength"].Id },
+                    new ExerciseCategory { ExerciseId = exercises["Jumping Jacks"].Id, CategoryId = categories["Cardio"].Id },
+                    new ExerciseCategory { ExerciseId = exercises["Jumping Jacks"].Id, CategoryId = categories["Standing"].Id },
+                    new ExerciseCategory { ExerciseId = exercises["Burpees"].Id, CategoryId = categories["Full Body"].Id },
+                    new ExerciseCategory { ExerciseId = exercises["Burpees"].Id, CategoryId = categories["Cardio"].Id },
+                    new ExerciseCategory { ExerciseId = exercises["Burpees"].Id, CategoryId = categories["Strength"].Id }
                 };
-
                 await _context.ExerciseCategories.AddRangeAsync(exerciseCategories);
                 await _context.SaveChangesAsync();
             }
@@ -164,52 +156,45 @@ namespace Infrastructure.Seeds
 
         private async Task SeedWorkoutsAsync()
         {
-            // Step 1: Seed Workouts if they don't exist
             if (!await _context.Workouts.AnyAsync())
             {
                 var adminUser = await _context.Users.FirstAsync(u => u.Email == DefaultSettings.DefaultAdminOneEmail);
+                var traineeUser = await _context.Users.FirstAsync(u => u.Email == DefaultSettings.DefaultTraineeEmail);
 
                 var workouts = new List<Workout>
                 {
                     // Predefined Workouts
                     new PredefinedWorkout { Name = "Full Body Strength", Description = "A simple workout to target all major muscle groups.", Counts = 10, Sets = 3, DurationSeconds = 0 },
-                    new PredefinedWorkout { Name = "Quick Cardio", Description = "A 5-minute cardio blast to get your heart rate up.", Counts = 30, Sets = 1, DurationSeconds = 300 },
+                    new PredefinedWorkout { Name = "Quick Cardio Blast", Description = "A 5-minute cardio workout.", Counts = 30, Sets = 1, DurationSeconds = 300 },
                     
-                    // Custom Workout for the admin user
-                    new CustomWorkout { Name = "Admin's Core Routine", Description = "A custom workout created by the admin.", Counts = 1, Sets = 3, DurationSeconds = 60, UserId = adminUser.Id, CreationDate = DateTime.UtcNow }
+                    // Custom Workouts
+                    new CustomWorkout { Name = "Admin's Core Routine", Description = "A custom workout by the admin.", Counts = 1, Sets = 3, DurationSeconds = 60, UserId = adminUser.Id, CreationDate = DateTime.UtcNow },
+                    new CustomWorkout { Name = "Trainee's First Workout", Description = "A custom workout created by the trainee.", Counts = 8, Sets = 2, DurationSeconds = 0, UserId = traineeUser.Id, CreationDate = DateTime.UtcNow },
+                    new CustomWorkout { Name = "Trainee's Cardio Day", Description = "A second custom workout for the trainee.", Counts = 15, Sets = 3, DurationSeconds = 0, UserId = traineeUser.Id, CreationDate = DateTime.UtcNow.AddDays(-1) }
                 };
                 await _context.Workouts.AddRangeAsync(workouts);
-                await _context.SaveChangesAsync(); // Save to get Workout IDs
+                await _context.SaveChangesAsync();
             }
 
-            // Step 2: Seed the relationship in the WorkoutExercise junction table
             if (!await _context.WorkoutExercises.AnyAsync())
             {
-                // Retrieve the entities we just created to get their IDs
-                var fullBodyWorkout = await _context.Workouts.FirstAsync(w => w.Name == "Full Body Strength");
-                var cardioWorkout = await _context.Workouts.FirstAsync(w => w.Name == "Quick Cardio");
-                var coreWorkout = await _context.Workouts.FirstAsync(w => w.Name == "Admin's Core Routine");
-
-                var pushup = await _context.Exercises.FirstAsync(e => e.Name == "Push-up");
-                var squat = await _context.Exercises.FirstAsync(e => e.Name == "Squat");
-                var plank = await _context.Exercises.FirstAsync(e => e.Name == "Plank");
-                var jumpingJacks = await _context.Exercises.FirstAsync(e => e.Name == "Jumping Jacks");
+                var workouts = await _context.Workouts.ToDictionaryAsync(w => w.Name, w => w);
+                var exercises = await _context.Exercises.ToDictionaryAsync(e => e.Name, e => e);
 
                 var workoutExercises = new List<WorkoutExercise>
                 {
-                    // Link exercises to the "Full Body Strength" workout
-                    new WorkoutExercise { WorkoutId = fullBodyWorkout.Id, ExerciseId = pushup.Id },
-                    new WorkoutExercise { WorkoutId = fullBodyWorkout.Id, ExerciseId = squat.Id },
-
-                    // Link exercises to the "Quick Cardio" workout
-                    new WorkoutExercise { WorkoutId = cardioWorkout.Id, ExerciseId = jumpingJacks.Id },
-
-                    // Link exercises to the "Admin's Core Routine"
-                    new WorkoutExercise { WorkoutId = coreWorkout.Id, ExerciseId = plank.Id }
+                    new WorkoutExercise { WorkoutId = workouts["Full Body Strength"].Id, ExerciseId = exercises["Push-up"].Id },
+                    new WorkoutExercise { WorkoutId = workouts["Full Body Strength"].Id, ExerciseId = exercises["Squat"].Id },
+                    new WorkoutExercise { WorkoutId = workouts["Quick Cardio Blast"].Id, ExerciseId = exercises["Jumping Jacks"].Id },
+                    new WorkoutExercise { WorkoutId = workouts["Admin's Core Routine"].Id, ExerciseId = exercises["Plank"].Id },
+                    new WorkoutExercise { WorkoutId = workouts["Trainee's First Workout"].Id, ExerciseId = exercises["Squat"].Id },
+                    new WorkoutExercise { WorkoutId = workouts["Trainee's Cardio Day"].Id, ExerciseId = exercises["Burpees"].Id },
+                    new WorkoutExercise { WorkoutId = workouts["Trainee's Cardio Day"].Id, ExerciseId = exercises["Jumping Jacks"].Id }
                 };
                 await _context.WorkoutExercises.AddRangeAsync(workoutExercises);
                 await _context.SaveChangesAsync();
             }
         }
+
     }
 }

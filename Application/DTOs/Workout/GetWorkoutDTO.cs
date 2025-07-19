@@ -10,7 +10,7 @@ namespace Application.DTOs.Workout
     {
         public string? Name { get; set; }
         public string? Description { get; set; }
-        public WorkoutEnum Discreminator { get; set; } = WorkoutEnum.All;
+        public WorkoutEnum Discriminator { get; set; } = WorkoutEnum.All;
         public string? UserId { get; set; }
     }
 }

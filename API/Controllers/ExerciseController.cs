@@ -7,6 +7,8 @@ using Application.DTOs.Exercise;
 using Application.IAppServices.Authentication;
 using Application.IAppServices.Exercise;
 using Application.Serializer;
+using Domain.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -20,6 +22,7 @@ namespace API.Controllers
         {
             _exerciseService = exerciseService;
         }
+
 
         [HttpGet]
         [ProducesResponseType(typeof(ApiResponse<List<ExerciseDTO>>), StatusCodes.Status200OK)]
@@ -53,6 +56,8 @@ namespace API.Controllers
                     string.Empty));
         }
 
+
+        [Authorize(Roles = ApiConsts.AdminRoleName)]
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -74,6 +79,7 @@ namespace API.Controllers
         }
 
 
+        [Authorize(Roles = ApiConsts.AdminRoleName)]
         [HttpPut]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
@@ -95,6 +101,7 @@ namespace API.Controllers
         }
 
 
+        [Authorize(Roles = ApiConsts.AdminRoleName)]
         [HttpDelete]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]

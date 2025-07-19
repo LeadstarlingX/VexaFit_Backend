@@ -15,6 +15,8 @@ using Microsoft.EntityFrameworkCore;
 
 
 using CategoryEntity = Domain.Entities.AppEntities.Category;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace Infrastructure.AppServices.Category
 {
@@ -24,7 +26,8 @@ namespace Infrastructure.AppServices.Category
         private readonly IMapper _mapper;
 
         public CategoryService(IAppRepository<CategoryEntity> categoryReopsitory,
-            UserManager<ApplicationUser> userManager, IMapper mapper)
+            UserManager<ApplicationUser> userManager, IMapper mapper,
+            IHttpContextAccessor httpContextAccessor)
         {
             _categoryRepository = categoryReopsitory;
             _mapper = mapper;
@@ -34,6 +37,8 @@ namespace Infrastructure.AppServices.Category
         public async Task<CategoryDTO> GetByIdAsync(int id)
         {
             var entity = (await _categoryRepository.FindWithAllIncludeAsync(x => x.Id == id)).FirstOrDefault();
+            if (entity == null)
+                throw new Exception("Category not found");
             return _mapper.Map<CategoryDTO>(entity);
         }
 
@@ -72,7 +77,12 @@ namespace Infrastructure.AppServices.Category
 
         public async Task<CategoryDTO> UpdateAsync(UpdateCategoryDTO dto)
         {
-            var entity = _mapper.Map<CategoryEntity>(dto);
+            var entity = (await _categoryRepository.FindAsync(x => x.Id == dto.Id)).FirstOrDefault();
+            if(entity == null)
+                throw new Exception("Category not found");
+
+
+            entity = _mapper.Map<CategoryEntity>(dto);
             await _categoryRepository.UpdateAsync(entity);
             return _mapper.Map<CategoryDTO>(entity);
         }
@@ -105,6 +115,8 @@ namespace Infrastructure.AppServices.Category
             }
 
             await _categoryRepository.BulkRemoveAsync(ids);
+
         }
+
     }
 }

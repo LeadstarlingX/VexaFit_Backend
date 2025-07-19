@@ -54,6 +54,8 @@ namespace Infrastructure.AppServices.Exercise
                 .Include(x => x.ExerciseCategories).ThenInclude(x => x.Category));
 
             var entity = (await query.ToListAsync()).FirstOrDefault();
+            if (entity == null)
+                throw new Exception("Exercise not found");
             return _mapper.Map<ExerciseDTO>(entity);
         }
 
@@ -262,7 +264,12 @@ namespace Infrastructure.AppServices.Exercise
 
         public async Task<ExerciseDTO> UpdateAsync(UpdateExerciseDTO dto)
         {
-            var entity = _mapper.Map<ExerciseEntity>(dto);
+            var entity = (await _exerciseRepository.FindAsync(x => x.Id == dto.Id)).FirstOrDefault();
+            if (entity == null)
+                throw new Exception("Category not found");
+
+
+            entity = _mapper.Map<ExerciseEntity>(dto);
             await _exerciseRepository.UpdateAsync(entity);
             return _mapper.Map<ExerciseDTO>(entity);
         }

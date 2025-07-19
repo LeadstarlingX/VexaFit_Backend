@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+
     public class WorkoutController : BaseAuthenticatedController
     {
         private readonly IWorkoutService _workoutService;
@@ -53,6 +54,7 @@ namespace API.Controllers
                     new ApiResponse(true, "", StatusCodes.Status200OK, category),
                     string.Empty));
         }
+
 
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status201Created)]

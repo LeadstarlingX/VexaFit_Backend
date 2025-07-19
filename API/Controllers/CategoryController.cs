@@ -6,10 +6,13 @@ using Application.DTOs.Common;
 using Application.IAppServices.Authentication;
 using Application.IAppServices.Category;
 using Application.Serializer;
+using Domain.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    [Authorize(Roles = ApiConsts.AdminRoleName)]
     public class CategoryController : BaseAuthenticatedController
     {
         private readonly ICategoryService _categoryService;
@@ -53,6 +56,7 @@ namespace API.Controllers
                     new ApiResponse(true, "", StatusCodes.Status200OK, category),
                     string.Empty));
         }
+
 
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status201Created)]
