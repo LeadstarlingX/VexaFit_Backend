@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs.Common;
 
-namespace Application.DTOs.Exercise
+namespace Application.DTOs.Reminder
 {
-    public class WorkoutExerciseDTO : BaseDTO<int>
+    public class ReminderDateDTO : BaseDTO<int>
     {
-
+        public DateTime DateWithTime { get; set; }
     }
 }

@@ -14,8 +14,8 @@ namespace Application.DTOs.Exercise
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
 
-        public ImageDTO? Image { get; set; } = null!;
-        public VideoDTO? Video { get; set; } = null!;
+        public ICollection<ImageDTO>? Image { get; set; } = null!;
+        public ICollection<VideoDTO>? Video { get; set; } = null!;
         public ICollection<CategoryDTO>? Categories { get; set; } = [];
     }
 }

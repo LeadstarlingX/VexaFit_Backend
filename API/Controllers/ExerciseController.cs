@@ -3,30 +3,29 @@ using Application.Common;
 using Application.DTOs.Action;
 using Application.DTOs.Category;
 using Application.DTOs.Common;
+using Application.DTOs.Exercise;
 using Application.IAppServices.Authentication;
-using Application.IAppServices.Category;
+using Application.IAppServices.Exercise;
 using Application.Serializer;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    public class CategoryController : BaseAuthenticatedController
+    public class ExerciseController : BaseAuthenticatedController
     {
-        private readonly ICategoryService _categoryService;
+        private readonly IExerciseService _exerciseService;
 
-        public CategoryController(
-            ICategoryService categoryService,
-            IAuthenticationService authenticationService,
-            IJsonFieldsSerializer jsonFieldsSerializer) : base(authenticationService, jsonFieldsSerializer) 
+        public ExerciseController(IAuthenticationService authenticationService,
+            IJsonFieldsSerializer jsonFieldsSerializer, IExerciseService exerciseService) : base(authenticationService, jsonFieldsSerializer)
         {
-            _categoryService = categoryService;
+            _exerciseService = exerciseService;
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(ApiResponse<List<CategoryDTO>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll([FromQuery] GetCategoryDTO dto)
+        [ProducesResponseType(typeof(ApiResponse<List<ExerciseDTO>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAll([FromQuery] GetExerciseDTO dto)
         {
-            var categories = await _categoryService.GetAllAsync(dto);
+            var categories = await _exerciseService.GetAllAsync(dto);
             return new RawJsonActionResult(
                 _jsonFieldsSerializer.Serialize(
                     new ApiResponse(true, "", StatusCodes.Status200OK, categories),
@@ -35,11 +34,11 @@ namespace API.Controllers
 
 
         [HttpGet]
-        [ProducesResponseType(typeof(ApiResponse<CategoryDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<ExerciseDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById([FromQuery] BaseDTO<int> dto)
         {
-            var category = await _categoryService.GetByIdAsync(dto.Id);
+            var category = await _exerciseService.GetByIdAsync(dto.Id);
             if (category == null)
             {
                 return new RawJsonActionResult(
@@ -57,9 +56,9 @@ namespace API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Insert(CreateCategoryDTO createCategoryDto)
+        public async Task<IActionResult> Insert(CreateExerciseDTO createExerciseDto)
         {
-            var result = await _categoryService.CreateAsync(createCategoryDto);
+            var result = await _exerciseService.CreateAsync(createExerciseDto);
             if (result == null)
             {
                 return new RawJsonActionResult(
@@ -78,9 +77,9 @@ namespace API.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update(UpdateCategoryDTO updateCategoryDto)
+        public async Task<IActionResult> Update(UpdateExerciseDTO updateExerciseDto)
         {
-            var result = await _categoryService.UpdateAsync(updateCategoryDto);
+            var result = await _exerciseService.UpdateAsync(updateExerciseDto);
             if (result == null)
             {
                 return new RawJsonActionResult(
@@ -101,12 +100,13 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(BaseDTO<int> dto)
         {
-            await _categoryService.DeleteAsync(dto.Id);
-            
+            await _exerciseService.DeleteAsync(dto.Id);
+
             return new RawJsonActionResult(
                 _jsonFieldsSerializer.Serialize(
                     new ApiResponse(true, "Category deleted successfully", StatusCodes.Status200OK),
                     string.Empty));
         }
+
     }
 }

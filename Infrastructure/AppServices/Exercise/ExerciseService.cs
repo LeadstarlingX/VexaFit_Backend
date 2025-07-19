@@ -26,7 +26,6 @@ namespace Infrastructure.AppServices.Exercise
     {
         private readonly IAppRepository<ExerciseEntity> _exerciseRepository;
         private readonly IAppRepository<ExerciseCategoryEntity> _exerciseCategoryRepository;
-        private readonly IAppRepository<WorkoutExerciseEntity> _workoutExerciseRepository;
         private readonly IAppRepository<ImageEntity> _imageRepository;
         private readonly IAppRepository<VideoEntity> _videoRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
@@ -40,7 +39,6 @@ namespace Infrastructure.AppServices.Exercise
         {
             _exerciseRepository = exerciseRepository;
             _exerciseCategoryRepository = exerciseCategoryRepository;
-            _workoutExerciseRepository = workoutExerciseRepository;
             _imageRepository = imageRepository;
             _videoRepository = videoRepository;
             _webHostEnvironment = webHostEnvironment;
@@ -50,8 +48,12 @@ namespace Infrastructure.AppServices.Exercise
         
         public async Task<ExerciseDTO> GetByIdAsync(int id)
         {
-            var entity = (await _exerciseRepository.FindWithAllIncludeAsync(x => x.Id == id)).FirstOrDefault();
+            var query =  _exerciseRepository.FindWithComplexIncludes(x => x.Id == id,
+                x => x.Include(x => x.Images)
+                .Include(x => x.Videos)
+                .Include(x => x.ExerciseCategories).ThenInclude(x => x.Category));
 
+            var entity = (await query.ToListAsync()).FirstOrDefault();
             return _mapper.Map<ExerciseDTO>(entity);
         }
 
@@ -82,9 +84,6 @@ namespace Infrastructure.AppServices.Exercise
                 CategoryId = dto.CategoryId };
             await _exerciseCategoryRepository.InsertAsync(exerciseCategoryEntity);
 
-            var workoutExerciseEntity = new WorkoutExerciseEntity { WorkoutId = dto.WorkoutId,
-                ExerciseId = exerciseEntity.Id };
-            await _workoutExerciseRepository.InsertAsync(workoutExerciseEntity);
 
             if (dto.ImageFiles.Any())
             {
@@ -183,8 +182,7 @@ namespace Infrastructure.AppServices.Exercise
                 var createdExercise = exerciseEntities[i];
 
                 exerciseCategoriesToCreate.Add(new ExerciseCategoryEntity { ExerciseId = createdExercise.Id, CategoryId = dto.CategoryId });
-                workoutExercisesToCreate.Add(new WorkoutExerciseEntity { WorkoutId = dto.WorkoutId, ExerciseId = createdExercise.Id });
-
+               
                 if (dto.ImageFiles != null)
                 {
                     foreach (var imageDTO in dto.ImageFiles)
@@ -254,7 +252,6 @@ namespace Infrastructure.AppServices.Exercise
 
             }
                 if (exerciseCategoriesToCreate.Any()) await _exerciseCategoryRepository.BulkInsertAsync(exerciseCategoriesToCreate);
-                if (workoutExercisesToCreate.Any()) await _workoutExerciseRepository.BulkInsertAsync(workoutExercisesToCreate);
                 if (imagesToCreate.Any()) await _imageRepository.BulkInsertAsync(imagesToCreate);
                 if (videosToCreate.Any()) await _videoRepository.BulkInsertAsync(videosToCreate);
 
@@ -272,7 +269,9 @@ namespace Infrastructure.AppServices.Exercise
 
         public async Task<IEnumerable<ExerciseDTO>> UpdateBulkAsync(IEnumerable<UpdateExerciseDTO> dto)
         {
-            throw new NotImplementedException();
+            var entities = _mapper.Map<IEnumerable<ExerciseEntity>>(dto);
+            await _exerciseRepository.BulkUpdateAsync(entities);
+            return _mapper.Map<IEnumerable<ExerciseDTO>>(entities);
         }
 
 

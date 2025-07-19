@@ -6,12 +6,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Application.IAppServices.Authentication;
 using Application.IAppServices.Category;
+using Application.IAppServices.Exercise;
+using Application.IAppServices.Workout;
 using Application.IRepository;
 using Application.IUnitOfWork;
 using Application.Mapping.CategoryProfile;
 using Application.Serializer;
 using Infrastructure.AppServices.Athuenticaion;
 using Infrastructure.AppServices.Category;
+using Infrastructure.AppServices.Exercise;
+using Infrastructure.AppServices.Workout;
 using Infrastructure.Context;
 using Infrastructure.Repository;
 using Infrastructure.Seeds;
@@ -44,6 +48,8 @@ namespace Infrastructure
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IExerciseService, ExerciseService>();
+            services.AddScoped<IWorkoutService, WorkoutService>();
             services.AddScoped<DataSeeder>();
             //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             //services.AddScoped<IAuthenticationService, AuthenticationService>();

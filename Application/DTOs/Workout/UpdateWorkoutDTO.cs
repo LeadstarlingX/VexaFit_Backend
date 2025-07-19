@@ -9,5 +9,7 @@ namespace Application.DTOs.Workout
 {
     public class UpdateWorkoutDTO : BaseDTO<int>
     {
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
     }
 }

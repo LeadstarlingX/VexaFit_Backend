@@ -9,9 +9,10 @@ namespace Application.DTOs.Reminder
 {
     public class ReminderDTO : BaseDTO<int>
     {
-        public int UserId { get; set; }
-        public DateTime TimeOfDay { get; set; }
-        public string Days { get; set; }
+        public string UserId { get; set; } = string.Empty;
+        public bool IsReminded { get; set; }
         public bool IsActive { get; set; }
+
+        public ICollection<ReminderDateDTO> WorkoutReminderDates { get; set; } = [];
     }
 }

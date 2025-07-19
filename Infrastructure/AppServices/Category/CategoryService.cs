@@ -11,22 +11,22 @@ using AutoMapper;
 using Infrastructure.Context;
 using Microsoft.AspNetCore.Identity;
 using Domain.Entities.AppEntities;
-using CategoryEntity = Domain.Entities.AppEntities.Category;
 using Microsoft.EntityFrameworkCore;
+
+
+using CategoryEntity = Domain.Entities.AppEntities.Category;
 
 namespace Infrastructure.AppServices.Category
 {
     public class CategoryService : ICategoryService
     {
         private readonly IAppRepository<CategoryEntity> _categoryRepository;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
 
         public CategoryService(IAppRepository<CategoryEntity> categoryReopsitory,
             UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             _categoryRepository = categoryReopsitory;
-            _userManager = userManager;
             _mapper = mapper;
         }
 
