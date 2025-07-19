@@ -1,31 +1,32 @@
 ﻿using API.Controllers.Common;
 using Application.Common;
 using Application.DTOs.Action;
-using Application.DTOs.Category;
 using Application.DTOs.Common;
 using Application.DTOs.Exercise;
+using Application.DTOs.Workout;
 using Application.IAppServices.Authentication;
-using Application.IAppServices.Exercise;
+using Application.IAppServices.Workout;
 using Application.Serializer;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    public class ExerciseController : BaseAuthenticatedController
+    public class WorkoutController : BaseAuthenticatedController
     {
-        private readonly IExerciseService _exerciseService;
+        private readonly IWorkoutService _workoutService;
 
-        public ExerciseController(IAuthenticationService authenticationService,
-            IJsonFieldsSerializer jsonFieldsSerializer, IExerciseService exerciseService) : base(authenticationService, jsonFieldsSerializer)
+        public WorkoutController(IAuthenticationService authenticationService,
+            IJsonFieldsSerializer jsonFieldsSerializer, IWorkoutService workoutService) : base(authenticationService,jsonFieldsSerializer)
         {
-            _exerciseService = exerciseService;
+            _workoutService = workoutService;
         }
 
+
         [HttpGet]
-        [ProducesResponseType(typeof(ApiResponse<List<ExerciseDTO>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll([FromQuery] GetExerciseDTO dto)
+        [ProducesResponseType(typeof(ApiResponse<List<WorkoutDTO>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAll([FromQuery] GetWorkoutDTO dto)
         {
-            var categories = await _exerciseService.GetAllAsync(dto);
+            var categories = await _workoutService.GetAllAsync(dto);
             return new RawJsonActionResult(
                 _jsonFieldsSerializer.Serialize(
                     new ApiResponse(true, "", StatusCodes.Status200OK, categories),
@@ -34,16 +35,16 @@ namespace API.Controllers
 
 
         [HttpGet]
-        [ProducesResponseType(typeof(ApiResponse<ExerciseDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<WorkoutDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById([FromQuery] BaseDTO<int> dto)
         {
-            var category = await _exerciseService.GetByIdAsync(dto.Id);
+            var category = await _workoutService.GetByIdAsync(dto.Id);
             if (category == null)
             {
                 return new RawJsonActionResult(
                     _jsonFieldsSerializer.Serialize(
-                        new ApiResponse(false, "Exercise not found", StatusCodes.Status404NotFound),
+                        new ApiResponse(false, "Workout not found", StatusCodes.Status404NotFound),
                         string.Empty));
             }
 
@@ -56,9 +57,9 @@ namespace API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Insert(CreateExerciseDTO createExerciseDto)
+        public async Task<IActionResult> Insert(CreateWorkoutDTO createExerciseDto)
         {
-            var result = await _exerciseService.CreateAsync(createExerciseDto);
+            var result = await _workoutService.CreateAsync(createExerciseDto);
             if (result == null)
             {
                 return new RawJsonActionResult(
@@ -69,7 +70,7 @@ namespace API.Controllers
 
             return new RawJsonActionResult(
                 _jsonFieldsSerializer.Serialize(
-                    new ApiResponse(true, "Exercise created successfully", StatusCodes.Status201Created),
+                    new ApiResponse(true, "Workout created successfully", StatusCodes.Status201Created),
                     string.Empty));
         }
 
@@ -77,9 +78,9 @@ namespace API.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update(UpdateExerciseDTO updateExerciseDto)
+        public async Task<IActionResult> Update(UpdateWorkoutDTO updateExerciseDto)
         {
-            var result = await _exerciseService.UpdateAsync(updateExerciseDto);
+            var result = await _workoutService.UpdateAsync(updateExerciseDto);
             if (result == null)
             {
                 return new RawJsonActionResult(
@@ -90,7 +91,7 @@ namespace API.Controllers
 
             return new RawJsonActionResult(
                 _jsonFieldsSerializer.Serialize(
-                    new ApiResponse(true, "Exercise updated successfully", StatusCodes.Status200OK),
+                    new ApiResponse(true, "Workout updated successfully", StatusCodes.Status200OK),
                     string.Empty));
         }
 
@@ -100,13 +101,12 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(BaseDTO<int> dto)
         {
-            await _exerciseService.DeleteAsync(dto.Id);
+            await _workoutService.DeleteAsync(dto.Id);
 
             return new RawJsonActionResult(
                 _jsonFieldsSerializer.Serialize(
-                    new ApiResponse(true, "Exercise deleted successfully", StatusCodes.Status200OK),
+                    new ApiResponse(true, "Workout deleted successfully", StatusCodes.Status200OK),
                     string.Empty));
         }
-
     }
 }

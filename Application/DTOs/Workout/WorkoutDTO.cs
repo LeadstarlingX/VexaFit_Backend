@@ -14,6 +14,10 @@ namespace Application.DTOs.Workout
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
 
+
+        public string? UserId { get; set; } = string.Empty;
+        public DateTime? CreationDate { get; set; }
+
         public ICollection<ExerciseDTO>? Exercises { get; set; }
         public ReminderDTO? Reminder { get; set; }
     }

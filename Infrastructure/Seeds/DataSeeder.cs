@@ -27,8 +27,23 @@ namespace Infrastructure.Seeds
             {
                 await SeedRolesAsync();
                 await SeedAdminUserAsync();
-                await SeedExercisesAndCategoriesAsync();
+                await ClearAndReseedContentAsync();
             }
+        }
+
+
+        private async Task ClearAndReseedContentAsync()
+        {
+            // 1. Clear existing content data in the correct order to respect foreign keys.
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"WorkoutExercises\"");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"Workouts\"");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"ExerciseCategories\"");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"Exercises\"");
+            // Note: Table names might need to be adjusted based on your DB schema (e.g., "public.Workouts")
+
+            // 2. Reseed the cleared data.
+            await SeedExercisesAndCategoriesAsync();
+            await SeedWorkoutsAsync();
         }
 
         private async Task SeedRolesAsync()
@@ -143,6 +158,56 @@ namespace Infrastructure.Seeds
                 };
 
                 await _context.ExerciseCategories.AddRangeAsync(exerciseCategories);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task SeedWorkoutsAsync()
+        {
+            // Step 1: Seed Workouts if they don't exist
+            if (!await _context.Workouts.AnyAsync())
+            {
+                var adminUser = await _context.Users.FirstAsync(u => u.Email == DefaultSettings.DefaultAdminOneEmail);
+
+                var workouts = new List<Workout>
+                {
+                    // Predefined Workouts
+                    new PredefinedWorkout { Name = "Full Body Strength", Description = "A simple workout to target all major muscle groups.", Counts = 10, Sets = 3, DurationSeconds = 0 },
+                    new PredefinedWorkout { Name = "Quick Cardio", Description = "A 5-minute cardio blast to get your heart rate up.", Counts = 30, Sets = 1, DurationSeconds = 300 },
+                    
+                    // Custom Workout for the admin user
+                    new CustomWorkout { Name = "Admin's Core Routine", Description = "A custom workout created by the admin.", Counts = 1, Sets = 3, DurationSeconds = 60, UserId = adminUser.Id, CreationDate = DateTime.UtcNow }
+                };
+                await _context.Workouts.AddRangeAsync(workouts);
+                await _context.SaveChangesAsync(); // Save to get Workout IDs
+            }
+
+            // Step 2: Seed the relationship in the WorkoutExercise junction table
+            if (!await _context.WorkoutExercises.AnyAsync())
+            {
+                // Retrieve the entities we just created to get their IDs
+                var fullBodyWorkout = await _context.Workouts.FirstAsync(w => w.Name == "Full Body Strength");
+                var cardioWorkout = await _context.Workouts.FirstAsync(w => w.Name == "Quick Cardio");
+                var coreWorkout = await _context.Workouts.FirstAsync(w => w.Name == "Admin's Core Routine");
+
+                var pushup = await _context.Exercises.FirstAsync(e => e.Name == "Push-up");
+                var squat = await _context.Exercises.FirstAsync(e => e.Name == "Squat");
+                var plank = await _context.Exercises.FirstAsync(e => e.Name == "Plank");
+                var jumpingJacks = await _context.Exercises.FirstAsync(e => e.Name == "Jumping Jacks");
+
+                var workoutExercises = new List<WorkoutExercise>
+                {
+                    // Link exercises to the "Full Body Strength" workout
+                    new WorkoutExercise { WorkoutId = fullBodyWorkout.Id, ExerciseId = pushup.Id },
+                    new WorkoutExercise { WorkoutId = fullBodyWorkout.Id, ExerciseId = squat.Id },
+
+                    // Link exercises to the "Quick Cardio" workout
+                    new WorkoutExercise { WorkoutId = cardioWorkout.Id, ExerciseId = jumpingJacks.Id },
+
+                    // Link exercises to the "Admin's Core Routine"
+                    new WorkoutExercise { WorkoutId = coreWorkout.Id, ExerciseId = plank.Id }
+                };
+                await _context.WorkoutExercises.AddRangeAsync(workoutExercises);
                 await _context.SaveChangesAsync();
             }
         }
