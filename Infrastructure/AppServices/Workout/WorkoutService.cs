@@ -6,6 +6,7 @@ using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using Application.DTOs.Category;
+using Application.DTOs.Common;
 using Application.DTOs.Exercise;
 using Application.DTOs.Workout;
 using Application.IAppServices.Workout;
@@ -14,20 +15,28 @@ using AutoMapper;
 using Domain.Entities.AppEntities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Domain.Entities.AppEntities;
 using WorkoutEntity = Domain.Entities.AppEntities.Workout;
+using ExerciseEntity = Domain.Entities.AppEntities.Exercise;
 
 namespace Infrastructure.AppServices.Workout
 {
     public class WorkoutService : IWorkoutService
     {
         private readonly IAppRepository<WorkoutEntity> _workoutRepository;
+        private readonly IAppRepository<WorkoutExercise> _workoutExerciseRepository;
+        private readonly IAppRepository<ExerciseEntity> _exerciseRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
-        public WorkoutService(IAppRepository<WorkoutEntity> workoutRepository, IMapper mapper,
+        public WorkoutService(IAppRepository<WorkoutEntity> workoutRepository,
+            IAppRepository<WorkoutExercise> workoutExerciseRepository,
+            IAppRepository<ExerciseEntity> exerciseRepository, IMapper mapper,
             IHttpContextAccessor httpContextAccessor)
         {
             _workoutRepository = workoutRepository;
+            _workoutExerciseRepository = workoutExerciseRepository;
+            _exerciseRepository = exerciseRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
         }
@@ -118,10 +127,19 @@ namespace Infrastructure.AppServices.Workout
 
         public async Task DeleteAsync(int id)
         {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
+
+
             var entity = (await _workoutRepository.FindAsync(x => x.Id == id)).FirstOrDefault();
             if (entity == null)
             {
                 throw new KeyNotFoundException("Workout not found");
+            }
+            if (!isAdmin)
+            {
+                if (((CustomWorkout)entity).UserId != userId)
+                    throw new Exception("This workout doesn't belong to you");
             }
             await _workoutRepository.RemoveAsync(entity);
             return;
@@ -135,6 +153,67 @@ namespace Infrastructure.AppServices.Workout
             }
 
             await _workoutRepository.BulkRemoveAsync(ids);
+        }
+
+
+        public async Task AddToWorkout(WorkoutExerciseDTO dto)
+        {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
+            
+            var customWorkout = (await _workoutRepository.FindAsync(x => x.Id == dto.workoutId)).FirstOrDefault();
+            if (customWorkout == null)
+                throw new Exception("Workout wasn't found");
+
+            var exercise = (await _exerciseRepository.FindAsync(x => x.Id == dto.exerciseId)).FirstOrDefault();
+            if (exercise == null)
+                throw new Exception("Exercise wasn't found");
+
+            if (!isAdmin)
+            {
+                if (((CustomWorkout)customWorkout).UserId != userId)
+                    throw new Exception("This workout doens't belong to you");
+            }
+
+            var entity = (await _workoutExerciseRepository.FindAsync(x => (x.WorkoutId == dto.workoutId
+            && x.ExerciseId == dto.exerciseId))).FirstOrDefault();
+            if (entity is not null)
+            {
+                throw new Exception("This exercise already belong to this workout");
+            }
+
+
+            await _workoutExerciseRepository.InsertAsync(new WorkoutExercise { WorkoutId = dto.workoutId
+                , ExerciseId = dto.exerciseId });
+        }
+
+        public async Task DeleteFromWorkout(WorkoutExerciseDTO dto)
+        {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
+
+            var customWorkout = (await _workoutRepository.FindAsync(x => x.Id == dto.workoutId)).FirstOrDefault();
+            if (customWorkout == null)
+                throw new Exception("Workout wasn't found");
+
+            var exercise = (await _exerciseRepository.FindAsync(x => x.Id == dto.exerciseId)).FirstOrDefault();
+            if (exercise == null)
+                throw new Exception("Exercise wasn't found");
+
+            if (!isAdmin)
+            {
+                if (((CustomWorkout)customWorkout).UserId != userId)
+                    throw new Exception("This workout doens't belong to you");
+            }
+
+            var entity = (await _workoutExerciseRepository.FindAsync(x => (x.WorkoutId == dto.workoutId
+            && x.ExerciseId == dto.exerciseId))).FirstOrDefault();
+            if (entity != null)
+                throw new Exception("This exercise already belong to this workout");
+
+
+            await _workoutExerciseRepository.RemoveAsync(new WorkoutExercise 
+            { WorkoutId = dto.workoutId ,ExerciseId = dto.exerciseId });
         }
 
 

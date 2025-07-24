@@ -51,8 +51,6 @@ namespace Infrastructure
             services.AddScoped<IExerciseService, ExerciseService>();
             services.AddScoped<IWorkoutService, WorkoutService>();
             services.AddScoped<DataSeeder>();
-            //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            //services.AddScoped<IAuthenticationService, AuthenticationService>();
 
             return services;
         }
@@ -81,8 +79,6 @@ namespace Infrastructure
             services.AddDbContext<ApplicationDbContext>(options =>
              options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-            //services.AddDbContext<IdentityAppDbContext>(options =>
-            //    options.UseNpgsql(configuration.GetConnectionString("IdentityConnection")));
 
             return services;
         }

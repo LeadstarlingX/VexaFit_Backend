@@ -23,6 +23,32 @@ namespace API.Controllers
         }
 
 
+        [HttpPut]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AddToWorkout(WorkoutExerciseDTO dto)
+        {
+            await _workoutService.AddToWorkout(dto);
+
+            return new RawJsonActionResult(
+                _jsonFieldsSerializer.Serialize(
+                    new ApiResponse(true, "Exercise added successfully", StatusCodes.Status200OK),
+                    string.Empty));
+        }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> DeleteFromWorkout (WorkoutExerciseDTO dto)
+        {
+            await _workoutService.DeleteFromWorkout(dto);
+
+            return new RawJsonActionResult(
+                _jsonFieldsSerializer.Serialize(
+                    new ApiResponse(true, "Exercise deleted successfully", StatusCodes.Status200OK),
+                    string.Empty));
+        }
+
         [HttpGet]
         [ProducesResponseType(typeof(ApiResponse<List<WorkoutDTO>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll([FromQuery] GetWorkoutDTO dto)
