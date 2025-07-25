@@ -14,6 +14,8 @@ namespace Application.IAppServices.Authentication
         Task<UserProfileDTO> GetAuthenticatedUser();
         Task LogoutAsync();
 
+        Task<UserProfileDTO> ChangePasswordAsync(ChangePasswordDTO dto);
+
         Task<string?> RefreshToken(string jwtToken);
     }
 }

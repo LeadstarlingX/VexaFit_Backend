@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Application.DTOs.Authentication;
 using Application.IAppServices.Authentication;
 using Application.IRepository;
+using AutoMapper;
 using Domain.Common;
 using Infrastructure.Context;
 using Microsoft.AspNetCore.Authentication;
@@ -79,6 +80,23 @@ namespace Infrastructure.AppServices.Athuenticaion
                 Email = user.Email ?? string.Empty,
                 Token = jwtToken,
             };
+        }
+
+        public async Task<UserProfileDTO> ChangePasswordAsync(ChangePasswordDTO dto)
+        {
+            string id = RetrieveUserID();
+            var user = await _userManager.FindByIdAsync(id);
+            if (user is null)
+                throw new Exception("This user isn't registerd in the system");
+
+            var result = await _userManager.ChangePasswordAsync(user,dto.OldPassword, dto.NewPassword);
+            if (!result.Succeeded)
+                throw new Exception(result.Errors.ToString());
+
+            var jwtToken = await GenerateJwtToken(user);
+            return new UserProfileDTO { Email = user.Email ?? string.Empty,
+                Id = user.Id, UserName = user.UserName ?? string.Empty,
+            Token = jwtToken };
         }
 
 
@@ -222,7 +240,7 @@ namespace Infrastructure.AppServices.Athuenticaion
             string token = authorizationHeader.Substring("Bearer".Length).Trim();
             var handler = new JwtSecurityTokenHandler();
             var jwtSecurityToken = handler.ReadJwtToken(token);
-            Claim userIdClaim = jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == "userId")!;
+            Claim userIdClaim = jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == "nameid")!;
 
             if (userIdClaim == null)
                 throw new Exception("UserId not found in the token.");

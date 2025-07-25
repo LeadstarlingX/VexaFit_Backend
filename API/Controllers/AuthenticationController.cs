@@ -33,7 +33,20 @@ namespace API.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
         {
             var result = await _authService.RegisterAsync(registerDto);
-            return new RawJsonActionResult(_jsonFieldsSerializer.Serialize(new ApiResponse(true, "User registered successfully", StatusCodes.Status201Created, result), string.Empty));
+            return new RawJsonActionResult(_jsonFieldsSerializer.Serialize(
+                new ApiResponse(true, "User registered successfully",
+                StatusCodes.Status201Created, result), string.Empty));
+        }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(ApiResponse<UserProfileDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDTO changePasswordDto)
+        {
+            var result = await _authService.ChangePasswordAsync(changePasswordDto);
+            return new RawJsonActionResult(_jsonFieldsSerializer.Serialize(
+                new ApiResponse(true, "Password changed successfully",
+                StatusCodes.Status200OK, result), string.Empty));
         }
 
         [HttpPost]
