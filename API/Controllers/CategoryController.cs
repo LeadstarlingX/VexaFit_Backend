@@ -105,12 +105,21 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(BaseDTO<int> dto)
         {
-            await _categoryService.DeleteAsync(dto.Id);
-            
-            return new RawJsonActionResult(
-                _jsonFieldsSerializer.Serialize(
-                    new ApiResponse(true, "Category deleted successfully", StatusCodes.Status200OK),
-                    string.Empty));
+            try
+            {
+                await _categoryService.DeleteAsync(dto.Id);
+                return new RawJsonActionResult(
+                    _jsonFieldsSerializer.Serialize(
+                        new ApiResponse(true, "Category deleted successfully", StatusCodes.Status200OK),
+                        string.Empty));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new RawJsonActionResult(
+                    _jsonFieldsSerializer.Serialize(
+                        new ApiResponse(false, ex.Message, StatusCodes.Status404NotFound),
+                        string.Empty));
+            }
         }
     }
 }

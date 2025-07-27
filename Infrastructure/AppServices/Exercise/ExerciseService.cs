@@ -266,10 +266,10 @@ namespace Infrastructure.AppServices.Exercise
         {
             var entity = (await _exerciseRepository.FindAsync(x => x.Id == dto.Id)).FirstOrDefault();
             if (entity == null)
-                throw new Exception("Category not found");
+                throw new KeyNotFoundException("Exercise not found"); 
 
+            _mapper.Map(dto, entity);
 
-            entity = _mapper.Map<ExerciseEntity>(dto);
             await _exerciseRepository.UpdateAsync(entity);
             return _mapper.Map<ExerciseDTO>(entity);
         }
@@ -285,13 +285,42 @@ namespace Infrastructure.AppServices.Exercise
 
         public async Task DeleteAsync(int id)
         {
-            var entity = (await _exerciseRepository.FindAsync(x => x.Id == id)).FirstOrDefault();
+            var entity = await _exerciseRepository.FindWithComplexIncludes(e => e.Id == id,
+                q => q.Include(e => e.Images).Include(e => e.Videos))
+                .FirstOrDefaultAsync();
+
             if (entity == null)
             {
                 throw new KeyNotFoundException("Exercise not found");
             }
+
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
+
+            if (entity.Images != null)
+            {
+                foreach (var image in entity.Images)
+                {
+                    var imagePath = Path.Combine(wwwRootPath, "images", image.Url);
+                    if (File.Exists(imagePath))
+                    {
+                        File.Delete(imagePath);
+                    }
+                }
+            }
+
+            if (entity.Videos != null)
+            {
+                foreach (var video in entity.Videos)
+                {
+                    var videoPath = Path.Combine(wwwRootPath, "videos", video.Url);
+                    if (File.Exists(videoPath))
+                    {
+                        File.Delete(videoPath);
+                    }
+                }
+            }
+
             await _exerciseRepository.RemoveAsync(entity);
-            return;
         }
 
         public async Task DeleteBulkAsync(IEnumerable<int> ids)

@@ -7,6 +7,7 @@ using Application.DTOs.Workout;
 using Application.IAppServices.Authentication;
 using Application.IAppServices.Workout;
 using Application.Serializer;
+using Domain.Entities.AppEntities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -23,10 +24,10 @@ namespace API.Controllers
         }
 
 
-        [HttpPut]
+        [HttpPost]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddToWorkout(WorkoutExerciseDTO dto)
+        public async Task<IActionResult> AddToWorkout(AddtoWorkoutDTO dto)
         {
             await _workoutService.AddToWorkout(dto);
 
@@ -36,17 +37,63 @@ namespace API.Controllers
                     string.Empty));
         }
 
+
         [HttpPut]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateExerciseInWorkout(UpdateWorkoutExerciseDTO dto)
+        {
+            try
+            {
+                await _workoutService.UpdateExerciseInWorkout(dto);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new RawJsonActionResult(
+                    _jsonFieldsSerializer.Serialize(
+                        new ApiResponse(false, ex.Message, StatusCodes.Status404NotFound),
+                        string.Empty));
+            }
+            catch (Exception ex)
+            {
+                return new RawJsonActionResult(
+                   _jsonFieldsSerializer.Serialize(
+                       new ApiResponse(false, ex.Message, StatusCodes.Status400BadRequest),
+                       string.Empty));
+            }
+        }
+
+
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteFromWorkout (WorkoutExerciseDTO dto)
         {
-            await _workoutService.DeleteFromWorkout(dto);
-
-            return new RawJsonActionResult(
+            try
+            {
+                await _workoutService.DeleteFromWorkout(dto);
+                return new RawJsonActionResult(
                 _jsonFieldsSerializer.Serialize(
-                    new ApiResponse(true, "Exercise deleted successfully", StatusCodes.Status200OK),
+                    new ApiResponse(true, "Exercise deleted successfully", StatusCodes.Status204NoContent),
                     string.Empty));
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return new RawJsonActionResult(
+                    _jsonFieldsSerializer.Serialize(
+                        new ApiResponse(false, ex.Message, StatusCodes.Status404NotFound),
+                        string.Empty));
+            }
+            catch (Exception ex)
+            {
+                return new RawJsonActionResult(
+                  _jsonFieldsSerializer.Serialize(
+                      new ApiResponse(false, ex.Message, StatusCodes.Status400BadRequest),
+                      string.Empty));
+            }
         }
 
         [HttpGet]

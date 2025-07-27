@@ -12,7 +12,8 @@ namespace Domain.Entities.AppEntities
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
 
-        public virtual WorkoutReminder? WorkoutReminder { get; set; }
         public virtual ICollection<WorkoutExercise> WorkoutExercises { get; set; } = [];
+
+        public virtual WorkoutReminder? WorkoutReminder { get; set; }
     }
 }

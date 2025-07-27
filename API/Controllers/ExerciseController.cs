@@ -61,7 +61,7 @@ namespace API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Insert(CreateExerciseDTO createExerciseDto)
+        public async Task<IActionResult> Insert([FromForm]CreateExerciseDTO createExerciseDto)
         {
             var result = await _exerciseService.CreateAsync(createExerciseDto);
             if (result == null)

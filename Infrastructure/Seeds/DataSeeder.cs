@@ -26,7 +26,7 @@ namespace Infrastructure.Seeds
             {
                 await SeedRolesAsync();
                 await SeedAdminUserAsync();
-                await SeedTraineeUserAsync();
+                await SeedTraineeUsersAsync(); // Updated method name
                 await ClearAndReseedContentAsync();
             }
         }
@@ -73,8 +73,9 @@ namespace Infrastructure.Seeds
             }
         }
 
-        private async Task SeedTraineeUserAsync()
+        private async Task SeedTraineeUsersAsync() // Renamed and expanded
         {
+            // Trainee 1
             if (!await _context.Users.AnyAsync(u => u.Email == DefaultSettings.DefaultTraineeEmail))
             {
                 var traineeUser = new ApplicationUser
@@ -85,6 +86,38 @@ namespace Infrastructure.Seeds
                     IsActive = true
                 };
                 var result = await _userManager.CreateAsync(traineeUser, DefaultSettings.DefaultTraineePassword);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(traineeUser, DefaultSettings.TraineeRoleName);
+                }
+            }
+            // Trainee 2 (New)
+            if (!await _context.Users.AnyAsync(u => u.Email == "trainee2@app.com"))
+            {
+                var traineeUser = new ApplicationUser
+                {
+                    Email = "trainee2@app.com",
+                    UserName = "TraineeTwo",
+                    EmailConfirmed = true,
+                    IsActive = true
+                };
+                var result = await _userManager.CreateAsync(traineeUser, "P@ssword123");
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(traineeUser, DefaultSettings.TraineeRoleName);
+                }
+            }
+            // Trainee 3 (New)
+            if (!await _context.Users.AnyAsync(u => u.Email == "trainee3@app.com"))
+            {
+                var traineeUser = new ApplicationUser
+                {
+                    Email = "trainee3@app.com",
+                    UserName = "TraineeThree",
+                    EmailConfirmed = true,
+                    IsActive = true
+                };
+                var result = await _userManager.CreateAsync(traineeUser, "P@ssword123");
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(traineeUser, DefaultSettings.TraineeRoleName);
@@ -159,18 +192,25 @@ namespace Infrastructure.Seeds
             if (!await _context.Workouts.AnyAsync())
             {
                 var adminUser = await _context.Users.FirstAsync(u => u.Email == DefaultSettings.DefaultAdminOneEmail);
-                var traineeUser = await _context.Users.FirstAsync(u => u.Email == DefaultSettings.DefaultTraineeEmail);
+                var traineeUser1 = await _context.Users.FirstAsync(u => u.Email == DefaultSettings.DefaultTraineeEmail);
+                var traineeUser2 = await _context.Users.FirstAsync(u => u.Email == "trainee2@app.com");
+                var traineeUser3 = await _context.Users.FirstAsync(u => u.Email == "trainee3@app.com");
+
 
                 var workouts = new List<Workout>
                 {
-                    // Predefined Workouts
-                    new PredefinedWorkout { Name = "Full Body Strength", Description = "A simple workout to target all major muscle groups.", Counts = 10, Sets = 3, DurationSeconds = 0 },
-                    new PredefinedWorkout { Name = "Quick Cardio Blast", Description = "A 5-minute cardio workout.", Counts = 30, Sets = 1, DurationSeconds = 300 },
+                    // Predefined Workouts (More added)
+                    new PredefinedWorkout { Name = "Full Body Strength", Description = "A simple workout to target all major muscle groups." },
+                    new PredefinedWorkout { Name = "Quick Cardio Blast", Description = "A 5-minute cardio workout." },
+                    new PredefinedWorkout { Name = "Core Focus", Description = "Strengthen your core with this targeted routine." },
+                    new PredefinedWorkout { Name = "Leg Day Basics", Description = "Foundational exercises for lower body strength." },
                     
-                    // Custom Workouts
-                    new CustomWorkout { Name = "Admin's Core Routine", Description = "A custom workout by the admin.", Counts = 1, Sets = 3, DurationSeconds = 60, UserId = adminUser.Id, CreationDate = DateTime.UtcNow },
-                    new CustomWorkout { Name = "Trainee's First Workout", Description = "A custom workout created by the trainee.", Counts = 8, Sets = 2, DurationSeconds = 0, UserId = traineeUser.Id, CreationDate = DateTime.UtcNow },
-                    new CustomWorkout { Name = "Trainee's Cardio Day", Description = "A second custom workout for the trainee.", Counts = 15, Sets = 3, DurationSeconds = 0, UserId = traineeUser.Id, CreationDate = DateTime.UtcNow.AddDays(-1) }
+                    // Custom Workouts (More added and assigned)
+                    new CustomWorkout { Name = "Admin's Core Routine", Description = "A custom workout by the admin.", UserId = adminUser.Id, CreationDate = DateTime.UtcNow },
+                    new CustomWorkout { Name = "Trainee1 First Workout", Description = "A custom workout created by the first trainee.", UserId = traineeUser1.Id, CreationDate = DateTime.UtcNow },
+                    new CustomWorkout { Name = "Trainee1 Cardio Day", Description = "A second custom workout for the first trainee.", UserId = traineeUser1.Id, CreationDate = DateTime.UtcNow.AddDays(-1) },
+                    new CustomWorkout { Name = "Trainee2 Leg Power", Description = "Trainee two's lower body day.", UserId = traineeUser2.Id, CreationDate = DateTime.UtcNow },
+                    new CustomWorkout { Name = "Trainee3 Full Body Intro", Description = "Trainee three's introduction to strength training.", UserId = traineeUser3.Id, CreationDate = DateTime.UtcNow }
                 };
                 await _context.Workouts.AddRangeAsync(workouts);
                 await _context.SaveChangesAsync();
@@ -183,18 +223,41 @@ namespace Infrastructure.Seeds
 
                 var workoutExercises = new List<WorkoutExercise>
                 {
-                    new WorkoutExercise { WorkoutId = workouts["Full Body Strength"].Id, ExerciseId = exercises["Push-up"].Id },
-                    new WorkoutExercise { WorkoutId = workouts["Full Body Strength"].Id, ExerciseId = exercises["Squat"].Id },
-                    new WorkoutExercise { WorkoutId = workouts["Quick Cardio Blast"].Id, ExerciseId = exercises["Jumping Jacks"].Id },
-                    new WorkoutExercise { WorkoutId = workouts["Admin's Core Routine"].Id, ExerciseId = exercises["Plank"].Id },
-                    new WorkoutExercise { WorkoutId = workouts["Trainee's First Workout"].Id, ExerciseId = exercises["Squat"].Id },
-                    new WorkoutExercise { WorkoutId = workouts["Trainee's Cardio Day"].Id, ExerciseId = exercises["Burpees"].Id },
-                    new WorkoutExercise { WorkoutId = workouts["Trainee's Cardio Day"].Id, ExerciseId = exercises["Jumping Jacks"].Id }
+                    // Full Body Strength
+                    new WorkoutExercise { WorkoutId = workouts["Full Body Strength"].Id, ExerciseId = exercises["Squat"].Id, Sets = 3, Reps = 12, WeightKg = 20 },
+                    new WorkoutExercise { WorkoutId = workouts["Full Body Strength"].Id, ExerciseId = exercises["Push-up"].Id, Sets = 3, Reps = 15 },
+                    
+                    // Quick Cardio Blast
+                    new WorkoutExercise { WorkoutId = workouts["Quick Cardio Blast"].Id, ExerciseId = exercises["Jumping Jacks"].Id, Sets = 1, DurationSeconds = 180 },
+                    new WorkoutExercise { WorkoutId = workouts["Quick Cardio Blast"].Id, ExerciseId = exercises["Burpees"].Id, Sets = 1, DurationSeconds = 120 },
+                    
+                    // Core Focus
+                    new WorkoutExercise { WorkoutId = workouts["Core Focus"].Id, ExerciseId = exercises["Plank"].Id, Sets = 4, Reps = 1, DurationSeconds = 45 },
+                    
+                    // Leg Day Basics
+                    new WorkoutExercise { WorkoutId = workouts["Leg Day Basics"].Id, ExerciseId = exercises["Squat"].Id, Sets = 4, Reps = 10, WeightKg = 50 },
+
+                    // Admin's Core Routine
+                    new WorkoutExercise { WorkoutId = workouts["Admin's Core Routine"].Id, ExerciseId = exercises["Plank"].Id, Sets = 3, Reps = 1, DurationSeconds = 90 },
+                    
+                    // Trainee1 First Workout
+                    new WorkoutExercise { WorkoutId = workouts["Trainee1 First Workout"].Id, ExerciseId = exercises["Squat"].Id, Sets = 2, Reps = 10 },
+                    
+                    // Trainee1 Cardio Day
+                    new WorkoutExercise { WorkoutId = workouts["Trainee1 Cardio Day"].Id, ExerciseId = exercises["Burpees"].Id, Sets = 3, Reps = 10 },
+                    new WorkoutExercise { WorkoutId = workouts["Trainee1 Cardio Day"].Id, ExerciseId = exercises["Jumping Jacks"].Id, Sets = 3, Reps = 25 },
+                    
+                    // Trainee2 Leg Power
+                    new WorkoutExercise { WorkoutId = workouts["Trainee2 Leg Power"].Id, ExerciseId = exercises["Squat"].Id, Sets = 5, Reps = 5, WeightKg = 60 },
+
+                    // Trainee3 Full Body Intro
+                    new WorkoutExercise { WorkoutId = workouts["Trainee3 Full Body Intro"].Id, ExerciseId = exercises["Push-up"].Id, Sets = 3, Reps = 8 },
+                    new WorkoutExercise { WorkoutId = workouts["Trainee3 Full Body Intro"].Id, ExerciseId = exercises["Squat"].Id, Sets = 3, Reps = 10 },
+                    new WorkoutExercise { WorkoutId = workouts["Trainee3 Full Body Intro"].Id, ExerciseId = exercises["Plank"].Id, Sets = 3, Reps = 1, DurationSeconds = 30 },
                 };
                 await _context.WorkoutExercises.AddRangeAsync(workoutExercises);
                 await _context.SaveChangesAsync();
             }
         }
-
     }
 }

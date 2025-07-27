@@ -12,7 +12,7 @@ namespace Application.IAppServices.Workout
     public interface IWorkoutService : IService<WorkoutDTO, CreateWorkoutDTO,
         UpdateWorkoutDTO, GetWorkoutDTO>
     {
-        public Task AddToWorkout(WorkoutExerciseDTO dto);
+        public Task AddToWorkout(AddtoWorkoutDTO dto);
         public Task DeleteFromWorkout(WorkoutExerciseDTO dto);
         public Task UpdateExerciseInWorkout(UpdateWorkoutExerciseDTO dto);
     }

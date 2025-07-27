@@ -82,31 +82,25 @@ namespace Infrastructure.AppServices.Workout
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
 
-            if (isAdmin)
-            {
-                var entity = (await _workoutRepository.FindAsync(x => x.Id == dto.Id)).FirstOrDefault();
-                if (entity == null)
-                    throw new Exception("Workout not found");
-                entity = _mapper.Map<WorkoutEntity>(dto);
-                await _workoutRepository.UpdateAsync(entity);
-                return _mapper.Map<WorkoutDTO>(entity);
-            }
-            else
-            {
-                var entity = (await _workoutRepository.FindAsync(x => x.Id == dto.Id)).FirstOrDefault();
-                if (entity == null)
-                    throw new Exception("Workout not found");
+            var entity = (await _workoutRepository.FindAsync(x => x.Id == dto.Id)).FirstOrDefault();
+            if (entity == null)
+                throw new KeyNotFoundException("Workout not found");
 
+            if (!isAdmin)
+            {
                 if (entity is PredefinedWorkout)
-                    throw new Exception("Unauthorized data, this workout is predefined");
+                    throw new UnauthorizedAccessException("Unauthorized: Predefined workouts cannot be modified.");
 
-                if ((entity as CustomWorkout)!.UserId != userId)
-                    throw new Exception("Unauthorized data, this workout doesn't belong to this user");
-
-                await _workoutRepository.UpdateAsync(entity);
-                return _mapper.Map<WorkoutDTO>(entity);
+                if (entity is CustomWorkout customWorkout && customWorkout.UserId != userId)
+                    throw new UnauthorizedAccessException("Unauthorized: This workout does not belong to you.");
             }
+
+            _mapper.Map(dto, entity);
+
+            await _workoutRepository.UpdateAsync(entity);
+            return _mapper.Map<WorkoutDTO>(entity);
         }
+        
 
         public async Task<IEnumerable<WorkoutDTO>> UpdateBulkAsync(IEnumerable<UpdateWorkoutDTO> dto)
         {
@@ -148,7 +142,7 @@ namespace Infrastructure.AppServices.Workout
         }
 
 
-        public async Task AddToWorkout(WorkoutExerciseDTO dto)
+        public async Task AddToWorkout(AddtoWorkoutDTO dto)
         {
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
@@ -192,11 +186,11 @@ namespace Infrastructure.AppServices.Workout
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
 
-            var customWorkout = (await _workoutRepository.FindAsync(x => x.Id == dto.workoutId)).FirstOrDefault();
+            var customWorkout = (await _workoutRepository.FindAsync(x => x.Id == dto.WorkoutId)).FirstOrDefault();
             if (customWorkout == null)
                 throw new Exception("Workout wasn't found");
 
-            var exercise = (await _exerciseRepository.FindAsync(x => x.Id == dto.exerciseId)).FirstOrDefault();
+            var exercise = (await _exerciseRepository.FindAsync(x => x.Id == dto.ExerciseId)).FirstOrDefault();
             if (exercise == null)
                 throw new Exception("Exercise wasn't found");
 
@@ -206,8 +200,8 @@ namespace Infrastructure.AppServices.Workout
                     throw new Exception("This workout doens't belong to you");
             }
 
-            var entity = (await _workoutExerciseRepository.FindAsync(x => (x.WorkoutId == dto.workoutId
-            && x.ExerciseId == dto.exerciseId))).FirstOrDefault();
+            var entity = (await _workoutExerciseRepository.FindAsync(x => (x.WorkoutId == dto.WorkoutId
+            && x.ExerciseId == dto.ExerciseId))).FirstOrDefault();
             if (entity == null)
                 throw new Exception("Exercise not found in this workout");
 

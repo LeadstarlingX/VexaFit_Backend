@@ -82,7 +82,7 @@ namespace Infrastructure.AppServices.Category
                 throw new Exception("Category not found");
 
 
-            entity = _mapper.Map<CategoryEntity>(dto);
+            _mapper.Map(dto, entity);
             await _categoryRepository.UpdateAsync(entity);
             return _mapper.Map<CategoryDTO>(entity);
         }

@@ -19,15 +19,17 @@ namespace Application.Mapping.WorkoutProfile
             CreateMap<Workout, WorkoutDTO>()
                 .Include<CustomWorkout, WorkoutDTO>()
                 .Include<PredefinedWorkout, WorkoutDTO>()
-                .ForMember(dest => dest.Exercises, opt => opt.MapFrom(src =>
-                    src.WorkoutExercises.Select(we => we.Exercise)))
+                .ForMember(dest => dest.WorkoutExercises, opt => opt.MapFrom(src => src.WorkoutExercises))
                 .ForMember(dest => dest.Reminder, opt => opt.MapFrom(src => src.WorkoutReminder));
 
+
+            CreateMap<WorkoutExercise, WorkoutExerciseDTO>();
             CreateMap<CreateWorkoutDTO, Workout>();
             CreateMap<CreateWorkoutDTO, CustomWorkout>();
             CreateMap<CustomWorkout, WorkoutDTO>();
             CreateMap<PredefinedWorkout, WorkoutDTO>();
             CreateMap<WorkoutReminder, ReminderDTO>();
+            CreateMap<UpdateWorkoutDTO, Workout>();
             CreateMap<WorkoutReminderDate, ReminderDateDTO>();
 
         }
