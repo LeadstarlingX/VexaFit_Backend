@@ -23,7 +23,8 @@ namespace Application.Mapping.WorkoutProfile
                     src.WorkoutExercises.Select(we => we.Exercise)))
                 .ForMember(dest => dest.Reminder, opt => opt.MapFrom(src => src.WorkoutReminder));
 
-
+            CreateMap<CreateWorkoutDTO, Workout>();
+            CreateMap<CreateWorkoutDTO, CustomWorkout>();
             CreateMap<CustomWorkout, WorkoutDTO>();
             CreateMap<PredefinedWorkout, WorkoutDTO>();
             CreateMap<WorkoutReminder, ReminderDTO>();

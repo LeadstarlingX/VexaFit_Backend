@@ -14,5 +14,6 @@ namespace Application.IAppServices.Workout
     {
         public Task AddToWorkout(WorkoutExerciseDTO dto);
         public Task DeleteFromWorkout(WorkoutExerciseDTO dto);
+        public Task UpdateExerciseInWorkout(UpdateWorkoutExerciseDTO dto);
     }
 }

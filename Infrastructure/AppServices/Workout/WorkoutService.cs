@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Cryptography.Xml;
-using System.Text;
-using System.Threading.Tasks;
-using Application.DTOs.Category;
-using Application.DTOs.Common;
-using Application.DTOs.Exercise;
+﻿using System.Security.Claims;
 using Application.DTOs.Workout;
 using Application.IAppServices.Workout;
 using Application.IRepository;
@@ -15,7 +6,6 @@ using AutoMapper;
 using Domain.Entities.AppEntities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Domain.Entities.AppEntities;
 using WorkoutEntity = Domain.Entities.AppEntities.Workout;
 using ExerciseEntity = Domain.Entities.AppEntities.Exercise;
 
@@ -70,7 +60,9 @@ namespace Infrastructure.AppServices.Workout
 
         public async Task<WorkoutDTO> CreateAsync(CreateWorkoutDTO dto)
         {
-            var entity = _mapper.Map<WorkoutEntity>(dto);
+            var entity = _mapper.Map<CustomWorkout>(dto);
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ((CustomWorkout)entity).UserId = userId!;
             await _workoutRepository.InsertAsync(entity);
             return _mapper.Map<WorkoutDTO>(entity);
         }
@@ -182,9 +174,17 @@ namespace Infrastructure.AppServices.Workout
                 throw new Exception("This exercise already belong to this workout");
             }
 
+            var newWorkoutExercise = new WorkoutExercise
+            {
+                WorkoutId = dto.workoutId,
+                ExerciseId = dto.exerciseId,
+                Sets = dto.Sets,
+                Reps = dto.Reps,
+                WeightKg = dto.WeightKg, 
+                DurationSeconds = dto.DurationSeconds 
+            };
 
-            await _workoutExerciseRepository.InsertAsync(new WorkoutExercise { WorkoutId = dto.workoutId
-                , ExerciseId = dto.exerciseId });
+            await _workoutExerciseRepository.InsertAsync(newWorkoutExercise);
         }
 
         public async Task DeleteFromWorkout(WorkoutExerciseDTO dto)
@@ -208,14 +208,36 @@ namespace Infrastructure.AppServices.Workout
 
             var entity = (await _workoutExerciseRepository.FindAsync(x => (x.WorkoutId == dto.workoutId
             && x.ExerciseId == dto.exerciseId))).FirstOrDefault();
-            if (entity != null)
-                throw new Exception("This exercise already belong to this workout");
+            if (entity == null)
+                throw new Exception("Exercise not found in this workout");
 
 
-            await _workoutExerciseRepository.RemoveAsync(new WorkoutExercise 
-            { WorkoutId = dto.workoutId ,ExerciseId = dto.exerciseId });
+            await _workoutExerciseRepository.RemoveAsync(entity);
         }
 
+
+
+        public async Task UpdateExerciseInWorkout(UpdateWorkoutExerciseDTO dto)
+        {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var entity = await _workoutExerciseRepository.GetAll()
+                .Include(we => we.Workout)
+                .FirstOrDefaultAsync(we => we.Id == dto.WorkoutExerciseId);
+
+            if (entity == null)
+                throw new KeyNotFoundException("Exercise entry not found in this workout.");
+
+            if (entity.Workout is CustomWorkout customWorkout && customWorkout.UserId != userId)
+                throw new Exception("This workout doesn't belong to you.");
+
+            entity.Sets = dto.Sets;
+            entity.Reps = dto.Reps;
+            entity.WeightKg = dto.WeightKg;
+            entity.DurationSeconds = dto.DurationSeconds;
+
+            await _workoutExerciseRepository.UpdateAsync(entity);
+        }
 
 
         private IQueryable<WorkoutEntity> GetBaseWorkoutQueryWithIncludes()

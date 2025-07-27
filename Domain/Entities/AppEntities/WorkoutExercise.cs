@@ -13,7 +13,10 @@ namespace Domain.Entities.AppEntities
         public int WorkoutId { get; set; }
         public int ExerciseId { get; set; }
 
-
+        public int Sets { get; set; }
+        public int Reps { get; set; }
+        public int? WeightKg { get; set; } // Nullable for bodyweight exercises
+        public int? DurationSeconds { get; set; } // Nullable for non-timed exercises
         public virtual Workout Workout { get; set; } = null!;
         public virtual Exercise Exercise { get; set; } = null!;
     }
