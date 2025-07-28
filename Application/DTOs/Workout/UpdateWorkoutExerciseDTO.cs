@@ -7,7 +7,7 @@ using Application.DTOs.Common;
 
 namespace Application.DTOs.Workout
 {
-    public class UpdateWorkoutExerciseDTO : BaseDTO<int>
+    public class UpdateWorkoutExerciseDTO
     {
         public int WorkoutExerciseId { get; set; }
         public int Sets { get; set; }

@@ -181,32 +181,26 @@ namespace Infrastructure.AppServices.Workout
             await _workoutExerciseRepository.InsertAsync(newWorkoutExercise);
         }
 
-        public async Task DeleteFromWorkout(WorkoutExerciseDTO dto)
+        public async Task DeleteFromWorkout(DeleteFromWorkoutDTO dto)
         {
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
 
-            var customWorkout = (await _workoutRepository.FindAsync(x => x.Id == dto.WorkoutId)).FirstOrDefault();
-            if (customWorkout == null)
-                throw new Exception("Workout wasn't found");
+           
+            var entityToDelete = await _workoutExerciseRepository.GetAll()
+                .Include(we => we.Workout)
+                .FirstOrDefaultAsync(we => we.Id == dto.Id);
 
-            var exercise = (await _exerciseRepository.FindAsync(x => x.Id == dto.ExerciseId)).FirstOrDefault();
-            if (exercise == null)
-                throw new Exception("Exercise wasn't found");
+            if (entityToDelete == null)
+                throw new KeyNotFoundException("The exercise link was not found in this workout.");
 
             if (!isAdmin)
             {
-                if (((CustomWorkout)customWorkout).UserId != userId)
-                    throw new Exception("This workout doens't belong to you");
+                if (entityToDelete.Workout is CustomWorkout customWorkout && customWorkout.UserId != userId)
+                    throw new UnauthorizedAccessException("This workout does not belong to you.");
             }
 
-            var entity = (await _workoutExerciseRepository.FindAsync(x => (x.WorkoutId == dto.WorkoutId
-            && x.ExerciseId == dto.ExerciseId))).FirstOrDefault();
-            if (entity == null)
-                throw new Exception("Exercise not found in this workout");
-
-
-            await _workoutExerciseRepository.RemoveAsync(entity);
+            await _workoutExerciseRepository.RemoveAsync(entityToDelete);
         }
 
 

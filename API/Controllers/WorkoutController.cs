@@ -47,7 +47,10 @@ namespace API.Controllers
             try
             {
                 await _workoutService.UpdateExerciseInWorkout(dto);
-                return NoContent();
+                return new RawJsonActionResult(
+                _jsonFieldsSerializer.Serialize(
+                    new ApiResponse(true, "Workout updated successfully", StatusCodes.Status204NoContent),
+                    string.Empty));
             }
             catch (KeyNotFoundException ex)
             {
@@ -70,7 +73,7 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> DeleteFromWorkout (WorkoutExerciseDTO dto)
+        public async Task<IActionResult> DeleteFromWorkout (DeleteFromWorkoutDTO dto)
         {
             try
             {

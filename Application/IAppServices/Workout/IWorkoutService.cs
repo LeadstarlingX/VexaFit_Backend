@@ -13,7 +13,7 @@ namespace Application.IAppServices.Workout
         UpdateWorkoutDTO, GetWorkoutDTO>
     {
         public Task AddToWorkout(AddtoWorkoutDTO dto);
-        public Task DeleteFromWorkout(WorkoutExerciseDTO dto);
+        public Task DeleteFromWorkout(DeleteFromWorkoutDTO dto);
         public Task UpdateExerciseInWorkout(UpdateWorkoutExerciseDTO dto);
     }
 }
