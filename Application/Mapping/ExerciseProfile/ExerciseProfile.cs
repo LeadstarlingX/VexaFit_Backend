@@ -18,7 +18,9 @@ namespace Application.Mapping.ExerciseProfile
             CreateMap<UpdateExerciseDTO, Exercise>();
             CreateMap<Exercise, ExerciseDTO>()
                 .ForMember(dest => dest.Categories, opt => opt.MapFrom(src =>
-                    src.ExerciseCategories.Select(ec => ec.Category)));
+                    src.ExerciseCategories.Select(ec => ec.Category)))
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Images));
+
 
             CreateMap<Image, ImageDTO>();
             CreateMap<Video, VideoDTO>();

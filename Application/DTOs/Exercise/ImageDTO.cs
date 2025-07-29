@@ -11,6 +11,7 @@ namespace Application.DTOs.Exercise
     public class ImageDTO : BaseDTO<int>
     {
         public string AlternativeText { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
         public IFormFile? ImageFile { get; set; }
     }
 }

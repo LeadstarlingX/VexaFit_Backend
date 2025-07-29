@@ -29,6 +29,53 @@ namespace Infrastructure.Seeds
             }
         }
 
+
+        private async Task SeedImagesAsync()
+        {
+            // Check if images already exist to avoid re-seeding
+            if (await _context.Images.AnyAsync()) return;
+
+            // Load exercises into a dictionary for easy lookup by name
+            var exercises = await _context.Exercises.ToDictionaryAsync(e => e.Name, e => e);
+
+            var imagesToSeed = new List<Image>
+    {
+        new Image
+        {
+            ExerciseId = exercises["Push-up"].Id,
+            Url = "push-up.jpeg", // Must exactly match the filename in wwwroot/images
+            AlternativeText = "A person doing a push-up"
+        },
+        new Image
+        {
+            ExerciseId = exercises["Squat"].Id,
+            Url = "squat.png", // Must exactly match the filename
+            AlternativeText = "A person performing a squat"
+        },
+        new Image
+        {
+            ExerciseId = exercises["Plank"].Id,
+            Url = "plank.jpeg", // Must exactly match the filename
+            AlternativeText = "A person holding a plank position"
+        },
+        new Image
+        {
+            ExerciseId = exercises["Jumping Jacks"].Id,
+            Url = "jumping-jacks.jpeg", // Example with a different file type
+            AlternativeText = "A person doing jumping jacks"
+        },
+        new Image
+        {
+            ExerciseId = exercises["Burpees"].Id,
+            Url = "burpees.jpeg", // Example with a different file type
+            AlternativeText = "A person doing burpees"
+        }
+    };
+
+            await _context.Images.AddRangeAsync(imagesToSeed);
+            await _context.SaveChangesAsync();
+        }
+       
         private async Task ClearAndReseedUsersAndRolesAsync()
         {
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"AspNetUserRoles\"");
@@ -46,9 +93,11 @@ namespace Infrastructure.Seeds
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"WorkoutExercises\"");
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"Workouts\"");
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"ExerciseCategories\"");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"Images\"");
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"Exercises\"");
 
             await SeedExercisesAndCategoriesAsync();
+            await SeedImagesAsync();
             await SeedWorkoutsAsync();
         }
 

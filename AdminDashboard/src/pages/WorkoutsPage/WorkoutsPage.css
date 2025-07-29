@@ -1,0 +1,22 @@
+/* This file can share styles with other placeholder pages */
+/* You can also use the classes from UsersPage.css like .page-header, .page-title, etc. */
+
+.placeholder-page {
+    text-align: center;
+}
+
+.placeholder-icon {
+    margin: 0 auto 1rem auto;
+    color: var(--gray-400);
+}
+
+.placeholder-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--gray-700);
+}
+
+.placeholder-text {
+    color: var(--gray-500);
+    margin-top: 0.5rem;
+}
