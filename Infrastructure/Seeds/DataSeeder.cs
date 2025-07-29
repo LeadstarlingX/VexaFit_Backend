@@ -24,11 +24,20 @@ namespace Infrastructure.Seeds
         {
             if (await _context.Database.CanConnectAsync())
             {
-                await SeedRolesAsync();
-                await SeedAdminUserAsync();
-                await SeedTraineeUsersAsync(); // Updated method name
+                await ClearAndReseedUsersAndRolesAsync(); // Updated method name
                 await ClearAndReseedContentAsync();
             }
+        }
+
+        private async Task ClearAndReseedUsersAndRolesAsync()
+        {
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"AspNetUserRoles\"");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"AspNetUsers\"");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"AspNetRoles\"");
+
+            await SeedRolesAsync();
+            await SeedAdminUserAsync();
+            await SeedTraineeUsersAsync();
         }
 
         private async Task ClearAndReseedContentAsync()
@@ -54,74 +63,64 @@ namespace Infrastructure.Seeds
 
         private async Task SeedAdminUserAsync()
         {
-            if (!await _context.Users.AnyAsync(u => u.Email == DefaultSettings.DefaultAdminOneEmail))
+            var adminUser = new ApplicationUser
             {
-                var adminUser = new ApplicationUser
-                {
-                    Email = DefaultSettings.DefaultAdminOneEmail,
-                    UserName = DefaultSettings.DefaultAdminOneUserName,
-                    PhoneNumber = DefaultSettings.DefaultAdminOnePhone,
-                    PhoneNumberConfirmed = true,
-                    EmailConfirmed = true,
-                    IsActive = true
-                };
-                var result = await _userManager.CreateAsync(adminUser, DefaultSettings.DefaultAdminPassword);
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(adminUser, DefaultSettings.AdminRoleName);
-                }
+                Email = DefaultSettings.DefaultAdminOneEmail,
+                UserName = DefaultSettings.DefaultAdminOneUserName,
+                PhoneNumber = DefaultSettings.DefaultAdminOnePhone,
+                PhoneNumberConfirmed = true,
+                EmailConfirmed = true,
+                IsActive = true
+            };
+            var result = await _userManager.CreateAsync(adminUser, DefaultSettings.DefaultAdminPassword);
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(adminUser, DefaultSettings.AdminRoleName);
             }
         }
 
         private async Task SeedTraineeUsersAsync() // Renamed and expanded
         {
             // Trainee 1
-            if (!await _context.Users.AnyAsync(u => u.Email == DefaultSettings.DefaultTraineeEmail))
+            var traineeUser1 = new ApplicationUser
             {
-                var traineeUser = new ApplicationUser
-                {
-                    Email = DefaultSettings.DefaultTraineeEmail,
-                    UserName = DefaultSettings.DefaultTraineeUserName,
-                    EmailConfirmed = true,
-                    IsActive = true
-                };
-                var result = await _userManager.CreateAsync(traineeUser, DefaultSettings.DefaultTraineePassword);
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(traineeUser, DefaultSettings.TraineeRoleName);
-                }
+                Email = DefaultSettings.DefaultTraineeEmail,
+                UserName = DefaultSettings.DefaultTraineeUserName,
+                EmailConfirmed = true,
+                IsActive = true
+            };
+            var result1 = await _userManager.CreateAsync(traineeUser1, DefaultSettings.DefaultTraineePassword);
+            if (result1.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(traineeUser1, DefaultSettings.TraineeRoleName);
             }
-            // Trainee 2 (New)
-            if (!await _context.Users.AnyAsync(u => u.Email == "trainee2@app.com"))
+
+            // Trainee 2
+            var traineeUser2 = new ApplicationUser
             {
-                var traineeUser = new ApplicationUser
-                {
-                    Email = "trainee2@app.com",
-                    UserName = "TraineeTwo",
-                    EmailConfirmed = true,
-                    IsActive = true
-                };
-                var result = await _userManager.CreateAsync(traineeUser, "P@ssword123");
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(traineeUser, DefaultSettings.TraineeRoleName);
-                }
+                Email = "trainee2@app.com",
+                UserName = "TraineeTwo",
+                EmailConfirmed = true,
+                IsActive = true
+            };
+            var result2 = await _userManager.CreateAsync(traineeUser2, DefaultSettings.DefaultTraineePassword);
+            if (result2.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(traineeUser2, DefaultSettings.TraineeRoleName);
             }
-            // Trainee 3 (New)
-            if (!await _context.Users.AnyAsync(u => u.Email == "trainee3@app.com"))
+
+            // Trainee 3
+            var traineeUser3 = new ApplicationUser
             {
-                var traineeUser = new ApplicationUser
-                {
-                    Email = "trainee3@app.com",
-                    UserName = "TraineeThree",
-                    EmailConfirmed = true,
-                    IsActive = true
-                };
-                var result = await _userManager.CreateAsync(traineeUser, "P@ssword123");
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(traineeUser, DefaultSettings.TraineeRoleName);
-                }
+                Email = "trainee3@app.com",
+                UserName = "TraineeThree",
+                EmailConfirmed = true,
+                IsActive = true
+            };
+            var result3 = await _userManager.CreateAsync(traineeUser3, DefaultSettings.DefaultTraineePassword);
+            if (result3.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(traineeUser3, DefaultSettings.TraineeRoleName);
             }
         }
 

@@ -1,19 +1,7 @@
-# Dependency directories
 bin/
 obj/
-
-# VS/tooling specific
-.vs/
 .vscode/
-
-# Project files
 *.user
 *.suo
-
-# Git
-.git/
-.gitignore
-
-# Docker files should not be in the image
 Dockerfile
-docker-compose.yml
+compose.*

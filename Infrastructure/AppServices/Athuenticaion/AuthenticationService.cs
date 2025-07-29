@@ -135,7 +135,9 @@ namespace Infrastructure.AppServices.Athuenticaion
             var user = new ApplicationUser
             {
                 UserName = dto.UserName,
-                Email = dto.Email
+                Email = dto.Email,
+                EmailConfirmed = true,
+                IsActive = true
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
