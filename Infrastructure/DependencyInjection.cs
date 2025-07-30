@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Application.IAppServices.Authentication;
 using Application.IAppServices.Category;
 using Application.IAppServices.Exercise;
+using Application.IAppServices.User;
 using Application.IAppServices.Workout;
 using Application.IRepository;
 using Application.IUnitOfWork;
@@ -15,6 +16,7 @@ using Application.Serializer;
 using Infrastructure.AppServices.Athuenticaion;
 using Infrastructure.AppServices.Category;
 using Infrastructure.AppServices.Exercise;
+using Infrastructure.AppServices.User;
 using Infrastructure.AppServices.Workout;
 using Infrastructure.Context;
 using Infrastructure.Repository;
@@ -50,6 +52,7 @@ namespace Infrastructure
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IExerciseService, ExerciseService>();
             services.AddScoped<IWorkoutService, WorkoutService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<DataSeeder>();
 
             return services;

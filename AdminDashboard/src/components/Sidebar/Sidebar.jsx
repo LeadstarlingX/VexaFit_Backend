@@ -1,14 +1,26 @@
-import React from 'react';
-import { Users, Dumbbell, Activity, LogOut, Settings, X } from 'lucide-react';
+﻿import React, { useState } from 'react';
+import { Users, Dumbbell, Activity, LogOut, Settings, X, ChevronDown, ChevronUp, BookCopy, LayoutGrid } from 'lucide-react';
 import './Sidebar.css';
 
-const Sidebar = ({ isOpen, setIsOpen, currentPage, setCurrentPage }) => {
-    const navItems = [
+const Sidebar = ({ isOpen, setIsOpen, currentPage, setCurrentPage, handleLogout }) => {
+    // ✨ NEW: State to manage the collapsible content menu
+    const [isContentMenuOpen, setIsContentMenuOpen] = useState(true);
+
+    const mainNavItems = [
         { name: 'Dashboard', icon: Activity, page: 'dashboard' },
         { name: 'Users', icon: Users, page: 'users' },
-        { name: 'Workouts', icon: Dumbbell, page: 'workouts' },
-        { name: 'Settings', icon: Settings, page: 'settings' },
     ];
+
+    const contentNavItems = [
+        { name: 'Workouts', icon: Dumbbell, page: 'workouts' },
+        { name: 'Exercises', icon: BookCopy, page: 'exercises' },
+        { name: 'Categories', icon: LayoutGrid, page: 'categories' },
+    ];
+
+    const handleNavigation = (page) => {
+        setCurrentPage(page);
+        if (isOpen) setIsOpen(false);
+    };
 
     return (
         <>
@@ -20,14 +32,14 @@ const Sidebar = ({ isOpen, setIsOpen, currentPage, setCurrentPage }) => {
                     </button>
                 </div>
                 <nav className="sidebar-nav">
-                    {navItems.map((item) => (
+                    {/* Main Navigation */}
+                    {mainNavItems.map((item) => (
                         <a
                             key={item.name}
                             href="#"
                             onClick={(e) => {
                                 e.preventDefault();
-                                setCurrentPage(item.page);
-                                if (isOpen) setIsOpen(false);
+                                handleNavigation(item.page);
                             }}
                             className={`nav-item ${currentPage === item.page ? 'active' : ''}`}
                         >
@@ -35,9 +47,44 @@ const Sidebar = ({ isOpen, setIsOpen, currentPage, setCurrentPage }) => {
                             {item.name}
                         </a>
                     ))}
+
+                    {/* ✨ NEW: Collapsible Content Management Section */}
+                    <div className="nav-section">
+                        <button
+                            className="nav-section-header"
+                            onClick={() => setIsContentMenuOpen(!isContentMenuOpen)}
+                        >
+                            <span>Content Management</span>
+                            {isContentMenuOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                        </button>
+                        {isContentMenuOpen && (
+                            <div className="nav-submenu">
+                                {contentNavItems.map((item) => (
+                                    <a
+                                        key={item.name}
+                                        href="#"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleNavigation(item.page);
+                                        }}
+                                        className={`nav-item nav-sub-item ${currentPage === item.page ? 'active' : ''}`}
+                                    >
+                                        <item.icon className="nav-item-icon" size={20} />
+                                        {item.name}
+                                    </a>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </nav>
+
+                {/* Footer Navigation (Settings & Logout) */}
                 <div className="sidebar-footer">
-                    <a href="#" className="nav-item">
+                    <a href="#" onClick={(e) => { e.preventDefault(); handleNavigation('settings'); }} className={`nav-item ${currentPage === 'settings' ? 'active' : ''}`}>
+                        <Settings className="nav-item-icon" size={22} />
+                        Settings
+                    </a>
+                    <a href="#" onClick={handleLogout} className="nav-item">
                         <LogOut className="nav-item-icon" size={22} />
                         Logout
                     </a>

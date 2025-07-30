@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -113,6 +114,9 @@ namespace Infrastructure.AppServices.Athuenticaion
             if (!existingUser.IsActive)
                 throw new Exception("Deactivated User");
 
+            existingUser.LastLoginDate = DateTime.UtcNow;
+            await _userManager.UpdateAsync(existingUser);
+            
             await _signInManager.SignInAsync(existingUser, false);
 
             var jwtToken = await GenerateJwtToken(existingUser);
