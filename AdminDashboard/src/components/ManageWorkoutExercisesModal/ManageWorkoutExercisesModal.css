@@ -1,0 +1,63 @@
+.manage-exercises-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    min-height: 400px;
+}
+
+.current-exercises-panel, .available-exercises-panel {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+    .current-exercises-panel h3, .available-exercises-panel h3 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 1.125rem;
+        font-weight: 600;
+    }
+
+    .current-exercises-panel ul, .available-exercises-panel ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .current-exercises-panel li, .available-exercises-panel li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+        .current-exercises-panel li:last-child, .available-exercises-panel li:last-child {
+            border-bottom: none;
+        }
+
+    .current-exercises-panel button, .available-exercises-panel button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--gray-500);
+    }
+
+        .current-exercises-panel button:hover {
+            color: #ef4444; /* red */
+        }
+
+        .available-exercises-panel button:hover {
+            color: var(--primary-green);
+        }
+
+    .available-exercises-panel .search-input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        box-sizing: border-box;
+    }

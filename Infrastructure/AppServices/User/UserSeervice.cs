@@ -63,5 +63,25 @@ namespace Infrastructure.AppServices.User
 
             return userDtos;
         }
+
+        public async Task ToggleUserStatusAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found.");
+            }
+
+            // Toggle the IsActive property
+            user.IsActive = !user.IsActive;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                // Combine errors into a single exception message
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new InvalidOperationException($"Failed to update user status: {errors}");
+            }
+        }
     }
 }

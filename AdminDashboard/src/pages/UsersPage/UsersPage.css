@@ -1,4 +1,4 @@
-/* ================================== */
+﻿/* ================================== */
 /* /src/pages/UsersPage.css     */
 /* ================================== */
 .page-header {
@@ -31,4 +31,14 @@
 
 .add-button-icon {
     margin-right: 0.5rem;
+}
+
+
+.action-button.danger:hover {
+    color: #ef4444; /* red */
+}
+
+/* ✨ ADD THIS STYLE */
+.action-button.success:hover {
+    color: #22c55e; /* green */
 }

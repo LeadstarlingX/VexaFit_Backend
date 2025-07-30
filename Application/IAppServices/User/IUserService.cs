@@ -11,5 +11,6 @@ namespace Application.IAppServices.User
     {
         Task<AdminDashboardStatsDTO> GetDashboardStatsAsync();
         Task<IEnumerable<UserDTO>> GetAllUsersAsync();
+        Task ToggleUserStatusAsync(string userId);
     }
 }

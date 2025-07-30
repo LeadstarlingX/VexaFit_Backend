@@ -1,22 +1,23 @@
-/* Re-uses .page-header, .page-title, .add-button from UsersPage.css */
-/* You can also copy those styles here if you prefer a single import. */
+/* Re-uses styles from UsersPage.css and CategoriesPage.css */
 
-.placeholder-page {
-    text-align: center;
+.table-image-thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 0.375rem;
 }
 
-.placeholder-icon {
-    margin: 0 auto 1rem auto;
-    color: var(--gray-400);
+.input-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 1rem;
+    min-height: 100px;
 }
 
-.placeholder-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--gray-700);
-}
-
-.placeholder-text {
-    color: var(--gray-500);
-    margin-top: 0.5rem;
+.multi-select {
+    height: 120px;
 }

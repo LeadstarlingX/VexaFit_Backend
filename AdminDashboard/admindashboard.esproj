@@ -9,6 +9,8 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="src\components\Modal\" />
+    <Folder Include="src\components\ManageWorkoutExercisesModal\" />
     <Folder Include="src\pages\LoginPage\" />
     <Folder Include="src\pages\ExercisePage\" />
     <Folder Include="src\pages\CategoriesPage\" />

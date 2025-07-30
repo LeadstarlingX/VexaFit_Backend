@@ -11,7 +11,7 @@ namespace Application.DTOs.Category
     public class CreateCategoryDTO
     {
         public string Name { get; set; } = string.Empty;
-        public CategoryTypeEnum TypeEnum { get; set; }
+        public CategoryTypeEnum Type { get; set; }
 
     }
 }

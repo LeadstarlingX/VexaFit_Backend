@@ -1,6 +1,7 @@
 ﻿using API.Controllers.Common;
 using Application.Common;
 using Application.DTOs.Action;
+using Application.DTOs.User;
 using Application.IAppServices.Authentication;
 using Application.IAppServices.User;
 using Application.Serializer;
@@ -43,6 +44,16 @@ namespace API.Controllers
                 _jsonFieldsSerializer.Serialize(
                     new ApiResponse(true, "All users retrieved successfully.", StatusCodes.Status200OK, users),
                     string.Empty));
+        }
+
+        [HttpPut("toggle-status")]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ToggleUserStatus([FromBody] ToggleUserStatusDTO dto)
+        {
+
+            await _userService.ToggleUserStatusAsync(dto.UserId);
+            return Ok(new ApiResponse(true , "User status updated successfully.", StatusCodes.Status200OK));
         }
     }
 }

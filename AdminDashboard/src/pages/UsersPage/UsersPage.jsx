@@ -1,7 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
-import { Search, UserPlus } from 'lucide-react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
+import { Search, UserPlus, UserCheck, UserX } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge/StatusBadge.jsx';
-// ✨ 1. We import the dataService to handle all data fetching.
 import { dataService } from '../../services/dataService.js';
 import './UsersPage.css';
 
@@ -12,26 +11,25 @@ const UsersPage = () => {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
 
+    const fetchUsers = useCallback(async () => {
+        try {
+            const usersData = await dataService.getAllUsers();
+            setAllUsers(usersData);
+            setError(null);
+        } catch (err) {
+            setError("Failed to load user data.");
+            console.error(err);
+        }
+    }, []); // Empty dependency array means the function is created only once.
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                // ✨ 2. We call the dataService to get all users.
-                // This will use the apiClient for real data or return mock data,
-                // depending on the .env configuration.
-                const usersData = await dataService.getAllUsers();
-                setAllUsers(usersData);
-                setFilteredUsers(usersData);
-                setError(null);
-            } catch (err) {
-                setError("Failed to load user data.");
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
+        const initialLoad = async () => {
+            setLoading(true);
+            await fetchUsers();
+            setLoading(false);
         };
-        fetchData();
-    }, []);
+        initialLoad();
+    }, [fetchUsers]); // Now depends on the stable fetchUsers function
 
     useEffect(() => {
         const lowercasedFilter = searchTerm.toLowerCase();
@@ -41,6 +39,17 @@ const UsersPage = () => {
         );
         setFilteredUsers(filtered);
     }, [searchTerm, allUsers]);
+
+    const handleToggleStatus = async (userId) => {
+        try {
+            await dataService.toggleUserStatus(userId);
+            // ✨ 3. Now this call will work correctly
+            await fetchUsers();
+        } catch (err) {
+            alert('Failed to update user status.');
+            console.error(err);
+        }
+    };
 
     if (loading) return <div className="page-content"><h2>Loading Users...</h2></div>;
     if (error) return <div className="page-content"><h2 style={{ color: 'red' }}>{error}</h2></div>;
@@ -76,28 +85,46 @@ const UsersPage = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {/* ✨ 3. The UI is populated with the fetched user data. */}
-                            {filteredUsers.map(user => (
-                                <tr key={user.Id ?? user.id}>
-                                    <td>
-                                        <div>{user.UserName ?? user.name}</div>
-                                        <div style={{ fontSize: '0.875rem', color: 'var(--gray-500)' }}>{user.Email ?? user.email}</div>
-                                    </td>
-                                    <td>{user.Roles ? user.Roles.join(', ') : user.role}</td>
-                                    <td>{new Date(user.JoinedDate ?? user.joined).toLocaleDateString()}</td>
-                                    <td><StatusBadge status={user.IsActive ? 'Active' : (user.status || 'Inactive')} /></td>
-                                    <td>
-                                        <button style={{ color: 'var(--primary-blue)', marginRight: '0.5rem' }}>Edit</button>
-                                        <button style={{ color: '#ef4444' }}>Delete</button>
-                                    </td>
-                                </tr>
-                            ))}
+                            {filteredUsers.map(user => {
+                                const isActive = user.IsActive ?? (user.status === 'Active');
+                                return (
+                                    <tr key={user.Id ?? user.id}>
+                                        <td>
+                                            <div>{user.UserName ?? user.name}</div>
+                                            <div style={{ fontSize: '0.875rem', color: 'var(--gray-500)' }}>{user.Email ?? user.email}</div>
+                                        </td>
+                                        <td>{user.Roles ? user.Roles.join(', ') : user.role}</td>
+                                        <td>{new Date(user.JoinedDate ?? user.joined).toLocaleDateString()}</td>
+                                        <td><StatusBadge status={isActive ? 'Active' : 'Inactive'} /></td>
+                                        <td>
+                                            {/* ✨ 3. Conditional button to activate/deactivate */}
+                                            {isActive ? (
+                                                <button
+                                                    className="action-button danger"
+                                                    title="Deactivate User"
+                                                    onClick={() => handleToggleStatus(user.Id)}
+                                                >
+                                                    <UserX size={18} />
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    className="action-button success"
+                                                    title="Reactivate User"
+                                                    onClick={() => handleToggleStatus(user.Id)}
+                                                >
+                                                    <UserCheck size={18} />
+                                                </button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     );
-};
+}
 
 export default UsersPage;
