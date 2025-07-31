@@ -86,10 +86,5 @@ namespace Infrastructure
             return services;
         }
 
-        private static IServiceCollection AddBackgroundServices(this IServiceCollection services)
-        {
-            //services.AddHostedService<BookingPaymentCheckService>();
-            return services;
-        }
     }
 }

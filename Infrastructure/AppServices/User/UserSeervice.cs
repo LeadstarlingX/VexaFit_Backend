@@ -28,7 +28,7 @@ namespace Infrastructure.AppServices.User
             var totalWorkouts = await _context.Workouts.CountAsync();
             var totalExercises = await _context.Exercises.CountAsync();
 
-            // ✨ IMPLEMENTED: Calculate active users from the last 24 hours
+            
             var today = DateTime.UtcNow.Date;
             var activeUsersToday = await _userManager.Users
                 .CountAsync(u => u.LastLoginDate.HasValue && u.LastLoginDate.Value.Date == today);
@@ -72,13 +72,13 @@ namespace Infrastructure.AppServices.User
                 throw new KeyNotFoundException("User not found.");
             }
 
-            // Toggle the IsActive property
+            
             user.IsActive = !user.IsActive;
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
-                // Combine errors into a single exception message
+                
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 throw new InvalidOperationException($"Failed to update user status: {errors}");
             }

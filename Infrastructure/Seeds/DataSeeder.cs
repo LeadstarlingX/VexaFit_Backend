@@ -24,7 +24,7 @@ namespace Infrastructure.Seeds
         {
             if (await _context.Database.CanConnectAsync())
             {
-                await ClearAndReseedUsersAndRolesAsync(); // Updated method name
+                await ClearAndReseedUsersAndRolesAsync();
                 await ClearAndReseedContentAsync();
             }
         }
@@ -32,10 +32,10 @@ namespace Infrastructure.Seeds
 
         private async Task SeedImagesAsync()
         {
-            // Check if images already exist to avoid re-seeding
+            
             if (await _context.Images.AnyAsync()) return;
 
-            // Load exercises into a dictionary for easy lookup by name
+            
             var exercises = await _context.Exercises.ToDictionaryAsync(e => e.Name, e => e);
 
             var imagesToSeed = new List<Image>
@@ -43,31 +43,31 @@ namespace Infrastructure.Seeds
         new Image
         {
             ExerciseId = exercises["Push-up"].Id,
-            Url = "push-up.jpeg", // Must exactly match the filename in wwwroot/images
+            Url = "push-up.jpeg", 
             AlternativeText = "A person doing a push-up"
         },
         new Image
         {
             ExerciseId = exercises["Squat"].Id,
-            Url = "squat.png", // Must exactly match the filename
+            Url = "squat.png", 
             AlternativeText = "A person performing a squat"
         },
         new Image
         {
             ExerciseId = exercises["Plank"].Id,
-            Url = "plank.jpeg", // Must exactly match the filename
+            Url = "plank.jpeg",
             AlternativeText = "A person holding a plank position"
         },
         new Image
         {
             ExerciseId = exercises["Jumping Jacks"].Id,
-            Url = "jumping-jacks.jpeg", // Example with a different file type
+            Url = "jumping-jacks.jpeg", 
             AlternativeText = "A person doing jumping jacks"
         },
         new Image
         {
             ExerciseId = exercises["Burpees"].Id,
-            Url = "burpees.jpeg", // Example with a different file type
+            Url = "burpees.jpeg", 
             AlternativeText = "A person doing burpees"
         }
     };
@@ -89,7 +89,7 @@ namespace Infrastructure.Seeds
 
         private async Task ClearAndReseedContentAsync()
         {
-            // Clears and reseeds content data for development
+            
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"WorkoutExercises\"");
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"Workouts\"");
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"ExerciseCategories\"");
@@ -129,9 +129,9 @@ namespace Infrastructure.Seeds
             }
         }
 
-        private async Task SeedTraineeUsersAsync() // Renamed and expanded
+        private async Task SeedTraineeUsersAsync() 
         {
-            // Trainee 1
+            
             var traineeUser1 = new ApplicationUser
             {
                 Email = DefaultSettings.DefaultTraineeEmail,
@@ -145,7 +145,7 @@ namespace Infrastructure.Seeds
                 await _userManager.AddToRoleAsync(traineeUser1, DefaultSettings.TraineeRoleName);
             }
 
-            // Trainee 2
+            
             var traineeUser2 = new ApplicationUser
             {
                 Email = "trainee2@app.com",
@@ -159,7 +159,7 @@ namespace Infrastructure.Seeds
                 await _userManager.AddToRoleAsync(traineeUser2, DefaultSettings.TraineeRoleName);
             }
 
-            // Trainee 3
+            
             var traineeUser3 = new ApplicationUser
             {
                 Email = "trainee3@app.com",
@@ -248,13 +248,13 @@ namespace Infrastructure.Seeds
 
                 var workouts = new List<Workout>
                 {
-                    // Predefined Workouts (More added)
+                    
                     new PredefinedWorkout { Name = "Full Body Strength", Description = "A simple workout to target all major muscle groups." },
                     new PredefinedWorkout { Name = "Quick Cardio Blast", Description = "A 5-minute cardio workout." },
                     new PredefinedWorkout { Name = "Core Focus", Description = "Strengthen your core with this targeted routine." },
                     new PredefinedWorkout { Name = "Leg Day Basics", Description = "Foundational exercises for lower body strength." },
                     
-                    // Custom Workouts (More added and assigned)
+                    
                     new CustomWorkout { Name = "Admin's Core Routine", Description = "A custom workout by the admin.", UserId = adminUser.Id, CreationDate = DateTime.UtcNow },
                     new CustomWorkout { Name = "Trainee1 First Workout", Description = "A custom workout created by the first trainee.", UserId = traineeUser1.Id, CreationDate = DateTime.UtcNow },
                     new CustomWorkout { Name = "Trainee1 Cardio Day", Description = "A second custom workout for the first trainee.", UserId = traineeUser1.Id, CreationDate = DateTime.UtcNow.AddDays(-1) },
@@ -272,34 +272,34 @@ namespace Infrastructure.Seeds
 
                 var workoutExercises = new List<WorkoutExercise>
                 {
-                    // Full Body Strength
+                    
                     new WorkoutExercise { WorkoutId = workouts["Full Body Strength"].Id, ExerciseId = exercises["Squat"].Id, Sets = 3, Reps = 12, WeightKg = 20 },
                     new WorkoutExercise { WorkoutId = workouts["Full Body Strength"].Id, ExerciseId = exercises["Push-up"].Id, Sets = 3, Reps = 15 },
                     
-                    // Quick Cardio Blast
+                    
                     new WorkoutExercise { WorkoutId = workouts["Quick Cardio Blast"].Id, ExerciseId = exercises["Jumping Jacks"].Id, Sets = 1, DurationSeconds = 180 },
                     new WorkoutExercise { WorkoutId = workouts["Quick Cardio Blast"].Id, ExerciseId = exercises["Burpees"].Id, Sets = 1, DurationSeconds = 120 },
                     
-                    // Core Focus
+                    
                     new WorkoutExercise { WorkoutId = workouts["Core Focus"].Id, ExerciseId = exercises["Plank"].Id, Sets = 4, Reps = 1, DurationSeconds = 45 },
                     
-                    // Leg Day Basics
+                    
                     new WorkoutExercise { WorkoutId = workouts["Leg Day Basics"].Id, ExerciseId = exercises["Squat"].Id, Sets = 4, Reps = 10, WeightKg = 50 },
 
-                    // Admin's Core Routine
+                    
                     new WorkoutExercise { WorkoutId = workouts["Admin's Core Routine"].Id, ExerciseId = exercises["Plank"].Id, Sets = 3, Reps = 1, DurationSeconds = 90 },
                     
-                    // Trainee1 First Workout
+                    
                     new WorkoutExercise { WorkoutId = workouts["Trainee1 First Workout"].Id, ExerciseId = exercises["Squat"].Id, Sets = 2, Reps = 10 },
                     
-                    // Trainee1 Cardio Day
+                   
                     new WorkoutExercise { WorkoutId = workouts["Trainee1 Cardio Day"].Id, ExerciseId = exercises["Burpees"].Id, Sets = 3, Reps = 10 },
                     new WorkoutExercise { WorkoutId = workouts["Trainee1 Cardio Day"].Id, ExerciseId = exercises["Jumping Jacks"].Id, Sets = 3, Reps = 25 },
                     
-                    // Trainee2 Leg Power
+                    
                     new WorkoutExercise { WorkoutId = workouts["Trainee2 Leg Power"].Id, ExerciseId = exercises["Squat"].Id, Sets = 5, Reps = 5, WeightKg = 60 },
 
-                    // Trainee3 Full Body Intro
+                    
                     new WorkoutExercise { WorkoutId = workouts["Trainee3 Full Body Intro"].Id, ExerciseId = exercises["Push-up"].Id, Sets = 3, Reps = 8 },
                     new WorkoutExercise { WorkoutId = workouts["Trainee3 Full Body Intro"].Id, ExerciseId = exercises["Squat"].Id, Sets = 3, Reps = 10 },
                     new WorkoutExercise { WorkoutId = workouts["Trainee3 Full Body Intro"].Id, ExerciseId = exercises["Plank"].Id, Sets = 3, Reps = 1, DurationSeconds = 30 },
