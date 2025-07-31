@@ -133,7 +133,7 @@ namespace API.Controllers
 
 
         [HttpPost]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<WorkoutDTO>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Insert(CreateWorkoutDTO createExerciseDto)
         {
@@ -148,7 +148,7 @@ namespace API.Controllers
 
             return new RawJsonActionResult(
                 _jsonFieldsSerializer.Serialize(
-                    new ApiResponse(true, "Workout created successfully", StatusCodes.Status201Created),
+                    new ApiResponse(true, "Workout created successfully", StatusCodes.Status201Created, result),
                     string.Empty));
         }
 

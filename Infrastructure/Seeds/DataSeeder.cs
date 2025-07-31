@@ -95,6 +95,7 @@ namespace Infrastructure.Seeds
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"ExerciseCategories\"");
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"Images\"");
             await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"Exercises\"");
+            await _context.Database.ExecuteSqlRawAsync("DELETE FROM \"Categories\"");
 
             await SeedExercisesAndCategoriesAsync();
             await SeedImagesAsync();
@@ -307,5 +308,6 @@ namespace Infrastructure.Seeds
                 await _context.SaveChangesAsync();
             }
         }
+
     }
 }

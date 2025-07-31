@@ -243,7 +243,7 @@ namespace Infrastructure.AppServices.Workout
 
         private IQueryable<WorkoutEntity> GetBaseWorkoutQueryWithIncludes()
         {
-            return _workoutRepository.GetAll()
+            return _workoutRepository.GetAll().AsSplitQuery()
                 .Include(x => x.WorkoutExercises)
                     .ThenInclude(we => we.Exercise)
                         .ThenInclude(e => e.Images)
