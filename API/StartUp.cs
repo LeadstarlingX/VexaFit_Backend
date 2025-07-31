@@ -27,7 +27,7 @@ namespace API
                 app.UseHsts();
             }
 
-
+            /// I commented this so mobile requests aren't redirected to https
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
