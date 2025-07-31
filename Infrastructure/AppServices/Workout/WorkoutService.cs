@@ -39,7 +39,7 @@ namespace Infrastructure.AppServices.Workout
             query = ApplySecurityFilter(query);
 
             var entity = await query.FirstOrDefaultAsync(x => x.Id == id);
-            if (entity == null)
+            if (entity is null)
                 throw new Exception("Workout not found");
             return _mapper.Map<WorkoutDTO>(entity);
         }
@@ -60,6 +60,11 @@ namespace Infrastructure.AppServices.Workout
 
         public async Task<WorkoutDTO> CreateAsync(CreateWorkoutDTO dto)
         {
+            if (dto is null)
+            {
+                throw new ArgumentNullException(nameof(dto));
+            }
+
             var entity = _mapper.Map<CustomWorkout>(dto);
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             ((CustomWorkout)entity).UserId = userId!;
@@ -83,7 +88,7 @@ namespace Infrastructure.AppServices.Workout
             var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
 
             var entity = (await _workoutRepository.FindAsync(x => x.Id == dto.Id)).FirstOrDefault();
-            if (entity == null)
+            if (entity is null)
                 throw new KeyNotFoundException("Workout not found");
 
             if (!isAdmin)
@@ -118,13 +123,16 @@ namespace Infrastructure.AppServices.Workout
 
 
             var entity = (await _workoutRepository.FindAsync(x => x.Id == id)).FirstOrDefault();
-            if (entity == null)
+            if (entity is null)
             {
                 throw new KeyNotFoundException("Workout not found");
             }
             if (!isAdmin)
             {
-                if (((CustomWorkout)entity).UserId != userId)
+                if (entity is PredefinedWorkout)
+                    throw new UnauthorizedAccessException("Predefined workouts cannot be deleted.");
+
+                if (entity is CustomWorkout customWorkout && customWorkout.UserId != userId)
                     throw new Exception("This workout doesn't belong to you");
             }
             await _workoutRepository.RemoveAsync(entity);
@@ -133,7 +141,7 @@ namespace Infrastructure.AppServices.Workout
 
         public async Task DeleteBulkAsync(IEnumerable<int> ids)
         {
-            if (ids == null || !ids.Any())
+            if (ids is null || !ids.Any())
             {
                 return;
             }
@@ -148,11 +156,11 @@ namespace Infrastructure.AppServices.Workout
             var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
             
             var customWorkout = (await _workoutRepository.FindAsync(x => x.Id == dto.workoutId)).FirstOrDefault();
-            if (customWorkout == null)
+            if (customWorkout is null)
                 throw new Exception("Workout wasn't found");
 
             var exercise = (await _exerciseRepository.FindAsync(x => x.Id == dto.exerciseId)).FirstOrDefault();
-            if (exercise == null)
+            if (exercise is null)
                 throw new Exception("Exercise wasn't found");
 
             if (!isAdmin)
@@ -191,7 +199,7 @@ namespace Infrastructure.AppServices.Workout
                 .Include(we => we.Workout)
                 .FirstOrDefaultAsync(we => we.Id == dto.Id);
 
-            if (entityToDelete == null)
+            if (entityToDelete is null)
                 throw new KeyNotFoundException("The exercise link was not found in this workout.");
 
             if (!isAdmin)
@@ -251,8 +259,22 @@ namespace Infrastructure.AppServices.Workout
 
             if (!isAdmin)
             {
-                // A user can see a workout if it's Predefined OR it's a CustomWorkout they own.
-                query = query.Where(x => x is PredefinedWorkout || (x is CustomWorkout && ((CustomWorkout)x).UserId == userId));
+                if (!isAdmin)
+                {
+                    // This revised logic uses OfType<T>() to reliably filter by the entity type,
+                    // which is better supported by EF Core than complex casting inside a Where clause.
+
+                    // 1. Get all workouts of the type PredefinedWorkout.
+                    var predefinedWorkouts = query.OfType<PredefinedWorkout>();
+
+                    // 2. Get all workouts of the type CustomWorkout that belong to the current user.
+                    var userCustomWorkouts = query.OfType<CustomWorkout>()
+                                                  .Where(cw => cw.UserId == userId);
+
+                    // 3. Combine the two lists into a single query.
+                    // The .Cast<WorkoutEntity>() is necessary for Concat() to work on the common base type.
+                    query = predefinedWorkouts.Cast<WorkoutEntity>().Concat(userCustomWorkouts.Cast<WorkoutEntity>());
+                }
             }
 
             return query;
@@ -286,8 +308,10 @@ namespace Infrastructure.AppServices.Workout
             var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
             if (isAdmin && !string.IsNullOrEmpty(dto.UserId))
             {
-                // We must first filter to CustomWorkout to access the UserId property
-                query = query.OfType<CustomWorkout>().Where(cw => cw.UserId == dto.UserId);
+                // THE FIX: Remove the redundant .OfType<CustomWorkout>() call.
+                // This ensures the UserId filter is correctly AND'd with the previous Name filter.
+                // The cast to CustomWorkout is safe because the switch statement above has already filtered the type.
+                query = query.Where(w => ((CustomWorkout)w).UserId == dto.UserId);
             }
 
             return query;
