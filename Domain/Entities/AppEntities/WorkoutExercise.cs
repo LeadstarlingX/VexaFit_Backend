@@ -15,8 +15,8 @@ namespace Domain.Entities.AppEntities
 
         public int Sets { get; set; }
         public int Reps { get; set; }
-        public int? WeightKg { get; set; } // Nullable for bodyweight exercises
-        public int? DurationSeconds { get; set; } // Nullable for non-timed exercises
+        public int? WeightKg { get; set; } 
+        public int? DurationSeconds { get; set; }
         public virtual Workout Workout { get; set; } = null!;
         public virtual Exercise Exercise { get; set; } = null!;
     }
