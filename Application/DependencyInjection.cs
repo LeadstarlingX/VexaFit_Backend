@@ -14,10 +14,8 @@ namespace Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
 
-            //services.AddAutoMapper(typeof(CarProfile).Assembly);
             services.AddAutoMapper(x => x.AddMaps(typeof(CategoryProfile).Assembly));
             services.AddAutoMapper(x => x.AddMaps(typeof(ExerciseProfile).Assembly));
-
 
             return services;
         }

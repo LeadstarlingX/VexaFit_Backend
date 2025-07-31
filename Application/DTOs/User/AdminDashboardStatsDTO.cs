@@ -11,6 +11,6 @@ namespace Application.DTOs.User
         public int TotalUsers { get; set; }
         public int TotalWorkouts { get; set; }
         public int TotalExercises { get; set; }
-        public int ActiveUsersToday { get; set; } // Example of a more complex stat
+        public int ActiveUsersToday { get; set; }
     }
 }
