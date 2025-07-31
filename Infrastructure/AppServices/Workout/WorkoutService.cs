@@ -216,16 +216,20 @@ namespace Infrastructure.AppServices.Workout
         public async Task UpdateExerciseInWorkout(UpdateWorkoutExerciseDTO dto)
         {
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
 
             var entity = await _workoutExerciseRepository.GetAll()
                 .Include(we => we.Workout)
                 .FirstOrDefaultAsync(we => we.Id == dto.WorkoutExerciseId);
 
-            if (entity == null)
+            if (entity is null)
                 throw new KeyNotFoundException("Exercise entry not found in this workout.");
 
-            if (entity.Workout is CustomWorkout customWorkout && customWorkout.UserId != userId)
-                throw new Exception("This workout doesn't belong to you.");
+            if (!isAdmin)
+            {
+                if (entity.Workout is CustomWorkout customWorkout && customWorkout.UserId != userId)
+                    throw new Exception("This workout doesn't belong to you.");
+            }
 
             entity.Sets = dto.Sets;
             entity.Reps = dto.Reps;
