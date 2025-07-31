@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using WorkoutEntity = Domain.Entities.AppEntities.Workout;
 using ExerciseEntity = Domain.Entities.AppEntities.Exercise;
+using System.Linq;
 
 namespace Infrastructure.AppServices.Workout
 {
@@ -261,42 +262,19 @@ namespace Infrastructure.AppServices.Workout
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
 
-            if (!isAdmin)
+            if (isAdmin)
             {
-                if (!isAdmin)
-                {
-                    // This revised logic uses OfType<T>() to reliably filter by the entity type,
-                    // which is better supported by EF Core than complex casting inside a Where clause.
-
-                    // 1. Get all workouts of the type PredefinedWorkout.
-                    var predefinedWorkouts = query.OfType<PredefinedWorkout>();
-
-                    // 2. Get all workouts of the type CustomWorkout that belong to the current user.
-                    var userCustomWorkouts = query.OfType<CustomWorkout>()
-                                                  .Where(cw => cw.UserId == userId);
-
-                    // 3. Combine the two lists into a single query.
-                    // The .Cast<WorkoutEntity>() is necessary for Concat() to work on the common base type.
-                    query = predefinedWorkouts.Cast<WorkoutEntity>().Concat(userCustomWorkouts.Cast<WorkoutEntity>());
-                }
+                return query;
             }
 
+            // STEP 1: The PREDEFINED query.
+            query = query.Where(x => x is PredefinedWorkout || (x is CustomWorkout && ((CustomWorkout)x).UserId == userId));
             return query;
+
         }
 
         private IQueryable<WorkoutEntity> ApplyDtoFilters(IQueryable<WorkoutEntity> query, GetWorkoutDTO dto)
         {
-            // Filter by specific type (Custom or Predefined)
-            switch (dto.Discriminator)
-            {
-                case WorkoutEnum.Custom:
-                    query = query.OfType<CustomWorkout>();
-                    break;
-                case WorkoutEnum.Predefined:
-                    query = query.OfType<PredefinedWorkout>();
-                    break;
-            }
-
             // Filter by text properties
             if (!string.IsNullOrEmpty(dto.Name))
             {
@@ -308,14 +286,29 @@ namespace Infrastructure.AppServices.Workout
                 query = query.Where(x => x.Description.Contains(dto.Description));
             }
 
+
+
             // Special filter for Admins looking for workouts by a specific user
             var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
+
             if (isAdmin && !string.IsNullOrEmpty(dto.UserId))
             {
                 // THE FIX: Remove the redundant .OfType<CustomWorkout>() call.
                 // This ensures the UserId filter is correctly AND'd with the previous Name filter.
                 // The cast to CustomWorkout is safe because the switch statement above has already filtered the type.
-                query = query.Where(w => ((CustomWorkout)w).UserId == dto.UserId);
+                query = query.OfType<CustomWorkout>().Where(cw => cw.UserId == dto.UserId);
+            }
+
+
+            // Filter by specific type (Custom or Predefined)
+            switch (dto.Discriminator)
+            {
+                case WorkoutEnum.Custom:
+                    query = query.OfType<CustomWorkout>();
+                    break;
+                case WorkoutEnum.Predefined:
+                    query = query.OfType<PredefinedWorkout>();
+                    break;
             }
 
             return query;
