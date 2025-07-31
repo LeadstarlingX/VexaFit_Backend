@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-// Wrapper class to make it easy to call
+
 public static class MockDb
 {
     public static IQueryable<T> CreateAsyncQueryable<T>(IEnumerable<T> data)
@@ -14,7 +14,7 @@ public static class MockDb
     }
 }
 
-// Internal implementation classes
+
 internal class TestAsyncEnumerable<T> : EnumerableQuery<T>, IAsyncEnumerable<T>, IQueryable<T>
 {
     public TestAsyncEnumerable(IEnumerable<T> enumerable) : base(enumerable) { }
