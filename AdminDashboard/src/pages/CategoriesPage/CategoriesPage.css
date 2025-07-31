@@ -1,5 +1,3 @@
-/* Re-uses .page-header, .page-title, .add-button from UsersPage.css */
-
 .placeholder-page {
     text-align: center;
 }
@@ -20,7 +18,7 @@
     margin-top: 0.5rem;
 }
 
-/* Form Styles */
+
 .input-group {
     margin-bottom: 1.5rem;
 }
@@ -80,7 +78,7 @@
         background-color: #0077e1;
     }
 
-/* Action Button Styles in Table */
+
 .action-button {
     background: none;
     border: none;

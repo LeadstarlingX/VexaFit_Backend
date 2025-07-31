@@ -5,7 +5,7 @@ import Modal from '../../components/Modal/Modal.jsx';
 import './ExercisePage.css';
 import '../UsersPage/UsersPage.css';
 
-// A dedicated form component for adding/editing exercises
+
 const ExerciseForm = ({ exercise, allCategories, onSave, onCancel }) => {
     const [name, setName] = useState(exercise?.Name || '');
     const [description, setDescription] = useState(exercise?.Description || '');

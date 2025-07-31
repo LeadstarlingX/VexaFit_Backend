@@ -20,7 +20,7 @@ const UsersPage = () => {
             setError("Failed to load user data.");
             console.error(err);
         }
-    }, []); // Empty dependency array means the function is created only once.
+    }, []); 
 
     useEffect(() => {
         const initialLoad = async () => {
@@ -29,7 +29,7 @@ const UsersPage = () => {
             setLoading(false);
         };
         initialLoad();
-    }, [fetchUsers]); // Now depends on the stable fetchUsers function
+    }, [fetchUsers]);
 
     useEffect(() => {
         const lowercasedFilter = searchTerm.toLowerCase();
@@ -43,7 +43,7 @@ const UsersPage = () => {
     const handleToggleStatus = async (userId) => {
         try {
             await dataService.toggleUserStatus(userId);
-            // ✨ 3. Now this call will work correctly
+            
             await fetchUsers();
         } catch (err) {
             alert('Failed to update user status.');
@@ -97,7 +97,7 @@ const UsersPage = () => {
                                         <td>{new Date(user.JoinedDate ?? user.joined).toLocaleDateString()}</td>
                                         <td><StatusBadge status={isActive ? 'Active' : 'Inactive'} /></td>
                                         <td>
-                                            {/* ✨ 3. Conditional button to activate/deactivate */}
+                                            
                                             {isActive ? (
                                                 <button
                                                     className="action-button danger"

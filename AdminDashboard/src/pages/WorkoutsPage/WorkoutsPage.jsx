@@ -40,7 +40,7 @@ const WorkoutsPage = () => {
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [editingWorkout, setEditingWorkout] = useState(null);
 
-    // ✨ NEW: State for the manage exercises modal
+    
     const [managingWorkout, setManagingWorkout] = useState(null);
 
     const fetchWorkouts = async () => {
@@ -127,7 +127,7 @@ const WorkoutsPage = () => {
                                     <td className="description-cell">{wo.Description}</td>
                                     <td>{wo.WorkoutExercises?.length || 0}</td>
                                     <td>
-                                        {/* ✨ NEW: Manage Exercises Button */}
+                                        
                                         <button className="action-button" title="Manage Exercises" onClick={() => setManagingWorkout(wo)}>
                                             <SlidersHorizontal size={18} />
                                         </button>
@@ -157,16 +157,15 @@ const WorkoutsPage = () => {
                 />
             </Modal>
 
-            {/* ✨ NEW: Render the Manage Exercises Modal */}
+            
             {managingWorkout && (
                 <ManageWorkoutExercisesModal
                     workout={managingWorkout}
                     onClose={() => setManagingWorkout(null)}
                     onUpdate={ async () => {
-                        // Refresh the list to show updated exercise counts
+                        
                         await fetchWorkouts();
 
-                        // Then, fetch the single, updated workout to refresh the modal's internal state
                         const updatedWorkout = await dataService.getWorkoutById(managingWorkout.Id);
                         setManagingWorkout(updatedWorkout);
                     }}

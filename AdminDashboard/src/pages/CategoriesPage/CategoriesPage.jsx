@@ -3,23 +3,22 @@ import { PlusCircle, Edit, Trash2 } from 'lucide-react';
 import { dataService } from '../../services/dataService.js';
 import Modal from '../../components/Modal/Modal.jsx';
 import './CategoriesPage.css';
-import '../UsersPage/UsersPage.css'; // Re-using some styles
+import '../UsersPage/UsersPage.css'; 
 
-// Enum for Category Types, matching your backend
 const CategoryTypeEnum = {
     MuscleGroup: 0,
     ExerciseType: 1,
     Position: 2,
 };
 
-// A dedicated form component for adding/editing categories
+
 const CategoryForm = ({ category, onSave, onCancel }) => {
     const [name, setName] = useState(category?.Name || '');
     const [type, setType] = useState(category?.Type ?? CategoryTypeEnum.MuscleGroup);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // The 'Id' is included for updates, and ignored for creates
+       
         onSave({ ...category, Name: name, Type: type });
     };
 
@@ -63,7 +62,7 @@ const CategoriesPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
 
-    // Function to fetch or re-fetch categories
+    
     const fetchCategories = async () => {
         try {
             setLoading(true);
@@ -83,7 +82,7 @@ const CategoriesPage = () => {
     }, []);
 
     const handleAddClick = () => {
-        setEditingCategory(null); // Ensure we're in "add" mode
+        setEditingCategory(null);
         setIsModalOpen(true);
     };
 
@@ -96,7 +95,7 @@ const CategoriesPage = () => {
         if (window.confirm('Are you sure you want to delete this category?')) {
             try {
                 await dataService.deleteCategory(id);
-                fetchCategories(); // Refresh list after deleting
+                fetchCategories();
             } catch (err) {
                 alert('Failed to delete category.');
                 console.error(err);
@@ -112,7 +111,7 @@ const CategoriesPage = () => {
                 await dataService.createCategory(categoryData);
             }
             setIsModalOpen(false);
-            fetchCategories(); // Refresh list after saving
+            fetchCategories();
         } catch (err) {
             alert('Failed to save category.');
             console.error(err);

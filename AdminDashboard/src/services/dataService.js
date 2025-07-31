@@ -3,13 +3,13 @@ import {
     mockStats,
     mockAllUsers,
     mockCategories,
-    mockExercises, // Import new mock data
-    mockWorkouts   // Import new mock data
+    mockExercises, 
+    mockWorkouts  
 } from '../data/mockData.jsx';
 
 const useMockData = import.meta.env.VITE_USE_MOCK_DATA === 'true';
 
-// --- API Functions ---
+
 const getLiveDashboardStats = async () => {
     const response = await apiClient.get('/User/GetDashboardStats/stats');
     return response.data.Data;
@@ -21,7 +21,6 @@ const getLiveAllUsers = async () => {
 };
 
 const toggleLiveUserStatus = async (userId) => {
-    // This sends a PUT request with the userId in the body, as expected by your controller.
     const response = await apiClient.put('/User/ToggleUserStatus/toggle-status', { userId });
     return response.data;
 };
@@ -89,7 +88,7 @@ const deleteLiveExercise = async (id) => {
 
 
 
-const getLiveWorkoutById = async (id) => { // ✨ NEW FUNCTION
+const getLiveWorkoutById = async (id) => { 
     const response = await apiClient.get(`/Workout/GetById?Id=${id}`);
     return response.data.Data;
 };
@@ -135,17 +134,16 @@ const removeExerciseFromLiveWorkout = async (workoutExerciseId) => {
 };
 
 
-// --- Mock Functions ---
+
 const getMockDashboardStats = () => Promise.resolve(mockStats);
 
 const getMockAllUsers = () => Promise.resolve(mockAllUsers);
 
 const toggleMockUserStatus = (userId) => {
     console.log(`Mock: Toggling status for user ID: ${userId}`);
-    // This simulates the change in the mock data for UI testing
+  
     const user = mockAllUsers.find(u => u.id === userId || u.Id === userId);
     if (user) {
-        // Live API uses IsActive, mock uses status. We'll handle both.
         user.IsActive = !user.IsActive;
         user.status = user.IsActive ? 'Active' : 'Inactive';
     }
@@ -182,7 +180,7 @@ const deleteMockExercise = (id) => { console.log("Mock: Deleting exercise ID:", 
 
 
 
-const getMockWorkoutById = (id) => { // ✨ NEW MOCK FUNCTION
+const getMockWorkoutById = (id) => { 
     return Promise.resolve(mockWorkouts.find(w => w.Id === id));
 };
 
@@ -208,7 +206,6 @@ const removeExerciseFromMockWorkout = (workoutExerciseId) => {
 
 
 
-// --- Exported Service ---
 export const dataService = {
     getDashboardStats: useMockData ? getMockDashboardStats : getLiveDashboardStats,
     getAllUsers: useMockData ? getMockAllUsers : getLiveAllUsers,

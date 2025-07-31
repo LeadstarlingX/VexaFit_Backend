@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import './LoginPage.css';
 
-// The handleLogin function will be passed in as a prop from App.jsx
+
 const LoginPage = ({ handleLogin, error, loading }) => {
-    const [email, setEmail] = useState('Admin@vexafit.com'); // Default for convenience
-    const [password, setPassword] = useState('Admin123#'); // Default for convenience
+    const [email, setEmail] = useState('Admin@vexafit.com'); 
+    const [password, setPassword] = useState('Admin123#'); 
 
     const handleSubmit = (e) => {
         e.preventDefault();

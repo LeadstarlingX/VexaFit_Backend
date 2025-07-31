@@ -46,7 +46,7 @@
     }
 
         .current-exercises-panel button:hover {
-            color: #ef4444; /* red */
+            color: #ef4444;
         }
 
         .available-exercises-panel button:hover {

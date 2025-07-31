@@ -1,6 +1,4 @@
-﻿// In a real application, this data would come from your API.
-
-export const mockStats = {
+﻿export const mockStats = {
     totalUsers: 1250,
     totalWorkouts: 340,
     totalExercises: 150,
@@ -40,15 +38,15 @@ export const mockExercises = [
     },
 ];
 
-// ✨ NEW: Added mock data for workouts
+
 export const mockWorkouts = [
     {
         Id: 1,
         Name: 'Full Body Strength',
         Description: 'A simple workout to target all major muscle groups.',
         WorkoutExercises: [
-            { Exercise: mockExercises[0] }, // Push-up
-            { Exercise: mockExercises[1] }  // Squat
+            { Exercise: mockExercises[0] }, 
+            { Exercise: mockExercises[1] }  
         ]
     },
     {

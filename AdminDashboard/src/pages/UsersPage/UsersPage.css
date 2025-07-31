@@ -1,7 +1,4 @@
-﻿/* ================================== */
-/* /src/pages/UsersPage.css     */
-/* ================================== */
-.page-header {
+﻿.page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -35,10 +32,10 @@
 
 
 .action-button.danger:hover {
-    color: #ef4444; /* red */
+    color: #ef4444; 
 }
 
-/* ✨ ADD THIS STYLE */
+
 .action-button.success:hover {
-    color: #22c55e; /* green */
+    color: #22c55e; 
 }

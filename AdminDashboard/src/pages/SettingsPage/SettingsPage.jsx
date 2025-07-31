@@ -1,7 +1,7 @@
 import React from 'react';
 import { Settings } from 'lucide-react';
 import './SettingsPage.css';
-import '../UsersPage/UsersPage.css'; // Re-using .page-title
+import '../UsersPage/UsersPage.css'; s
 
 const SettingsPage = () => (
     <div>

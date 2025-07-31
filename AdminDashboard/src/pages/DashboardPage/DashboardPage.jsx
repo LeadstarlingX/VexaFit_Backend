@@ -3,9 +3,7 @@ import { LineChart, Line, PieChart, Pie, CartesianGrid, XAxis, YAxis, Tooltip, L
 import { Users, Dumbbell, Activity, UserPlus } from 'lucide-react';
 import StatCard from '../../components/StatCard/StatCard.jsx';
 import StatusBadge from '../../components/StatusBadge/StatusBadge.jsx';
-// ✨ 1. We import the dataService, which acts as our single source for data fetching.
 import { dataService } from '../../services/dataService.js';
-// Charts can still use mock data for now, as we haven't created endpoints for them.
 import { roleDistributionData, userActivityData, PIE_CHART_COLORS } from '../../data/mockData.jsx';
 import './DashboardPage.css';
 
@@ -19,9 +17,6 @@ const DashboardPage = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                // ✨ 2. We call functions from the dataService.
-                // The dataService will automatically decide whether to call the real API (using apiClient)
-                // or return mock data, based on your .env configuration.
                 const statsData = await dataService.getDashboardStats();
                 const recentUsersData = await dataService.getRecentUsers();
 
@@ -49,8 +44,6 @@ const DashboardPage = () => {
         <div>
             <h2 className="page-title">Dashboard Overview</h2>
             <div className="dashboard-grid">
-                {/* ✨ 3. The UI is populated with the fetched data. */}
-                {/* Note the use of `??` to gracefully handle potential differences between mock and live data. */}
                 <StatCard title="Total Users" value={stats?.TotalUsers ?? stats?.totalUsers ?? 'N/A'} icon={Users} color="var(--primary-blue)" />
                 <StatCard title="Total Workouts" value={stats?.TotalWorkouts ?? stats?.totalWorkouts ?? 'N/A'} icon={Dumbbell} color="var(--primary-green)" />
                 <StatCard title="Total Exercises" value={stats?.TotalExercises ?? stats?.totalExercises ?? 'N/A'} icon={Activity} color="var(--primary-yellow)" />

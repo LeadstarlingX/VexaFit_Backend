@@ -6,7 +6,6 @@ import UsersPage from './pages/UsersPage/UsersPage.jsx';
 import WorkoutsPage from './pages/WorkoutsPage/WorkoutsPage.jsx';
 import SettingsPage from './pages/SettingsPage/SettingsPage.jsx';
 import LoginPage from './pages/LoginPage/LoginPage.jsx';
-// ✨ 1. Import the new pages
 import ExercisesPage from './pages/ExercisePage/ExercisePage.jsx';
 import CategoriesPage from './pages/CategoriesPage/CategoriesPage.jsx';
 import apiClient from './api/apiClient.js';
@@ -70,7 +69,6 @@ export default function App() {
                 return <UsersPage />;
             case 'workouts':
                 return <WorkoutsPage />;
-            // ✨ 2. Add cases for the new pages
             case 'exercises':
                 return <ExercisesPage />;
             case 'categories':

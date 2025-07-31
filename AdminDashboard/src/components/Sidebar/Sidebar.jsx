@@ -3,7 +3,7 @@ import { Users, Dumbbell, Activity, LogOut, Settings, X, ChevronDown, ChevronUp,
 import './Sidebar.css';
 
 const Sidebar = ({ isOpen, setIsOpen, currentPage, setCurrentPage, handleLogout }) => {
-    // ✨ NEW: State to manage the collapsible content menu
+
     const [isContentMenuOpen, setIsContentMenuOpen] = useState(true);
 
     const mainNavItems = [
@@ -32,7 +32,7 @@ const Sidebar = ({ isOpen, setIsOpen, currentPage, setCurrentPage, handleLogout 
                     </button>
                 </div>
                 <nav className="sidebar-nav">
-                    {/* Main Navigation */}
+                    
                     {mainNavItems.map((item) => (
                         <a
                             key={item.name}
@@ -48,7 +48,7 @@ const Sidebar = ({ isOpen, setIsOpen, currentPage, setCurrentPage, handleLogout 
                         </a>
                     ))}
 
-                    {/* ✨ NEW: Collapsible Content Management Section */}
+                    
                     <div className="nav-section">
                         <button
                             className="nav-section-header"
@@ -78,7 +78,7 @@ const Sidebar = ({ isOpen, setIsOpen, currentPage, setCurrentPage, handleLogout 
                     </div>
                 </nav>
 
-                {/* Footer Navigation (Settings & Logout) */}
+                
                 <div className="sidebar-footer">
                     <a href="#" onClick={(e) => { e.preventDefault(); handleNavigation('settings'); }} className={`nav-item ${currentPage === 'settings' ? 'active' : ''}`}>
                         <Settings className="nav-item-icon" size={22} />
