@@ -15,21 +15,21 @@ const Round3 = '20s';
 const Round4 = '10s';
 const Round5 = '5s';
 
-// Targets for Scenario 1: power_user_workout_flow
+// Targets for Scenario 1: 
 const scenario1target1 = 10;
 const scenario1target2 = 50;
 const scenario1target3 = 50;
 const scenario1target4 = 100;
 const scenario1target5 = 0;
 
-// Targets for Scenario 2: browsing_user_flow
+// Targets for Scenario 2: 
 const scenario2target1 = 10;
 const scenario2target2 = 50;
 const scenario2target3 = 50;
 const scenario2target4 = 100;
 const scenario2target5 = 0;
 
-// Targets for Scenario 3: admin_user_flow
+// Targets for Scenario 3: 
 const scenario3target1 = 10;
 const scenario3target2 = 20;
 const scenario3target3 = 20;
@@ -127,7 +127,7 @@ export function setup() {
     return { userToken: userToken, adminToken: adminToken };
 }
 
-// --- Scenario 1: Power User ---
+// --- Scenario 1: 
 export function workoutManagementFlow(data) {
     // Return early if the user token is not available
     if (!data.userToken) {
@@ -236,7 +236,7 @@ export function workoutManagementFlow(data) {
 }
 
 
-// --- Scenario 2: Browsing User ---
+// --- Scenario 2: 
 export function browsingFlow(data) {
     if (!data.userToken) return;
     const params = { headers: { 'Authorization': `Bearer ${data.userToken}` } };
@@ -261,7 +261,7 @@ export function browsingFlow(data) {
 }
 
 
-// --- Scenario 3: Admin User ---
+// --- Scenario 3: 
 export function adminFlow(data) {
     if (!data.adminToken) return;
 
