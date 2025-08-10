@@ -9,27 +9,22 @@ using Microsoft.EntityFrameworkCore;
 using WorkoutEntity = Domain.Entities.AppEntities.Workout;
 using ExerciseEntity = Domain.Entities.AppEntities.Exercise;
 using System.Linq;
+using Application.IUnitOfWork;
 
 namespace Infrastructure.AppServices.Workout
 {
     public class WorkoutService : IWorkoutService
     {
-        private readonly IAppRepository<WorkoutEntity> _workoutRepository;
-        private readonly IAppRepository<WorkoutExercise> _workoutExerciseRepository;
-        private readonly IAppRepository<ExerciseEntity> _exerciseRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAppUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public WorkoutService(IAppRepository<WorkoutEntity> workoutRepository,
-            IAppRepository<WorkoutExercise> workoutExerciseRepository,
-            IAppRepository<ExerciseEntity> exerciseRepository, IMapper mapper,
-            IHttpContextAccessor httpContextAccessor)
+        public WorkoutService(IMapper mapper,IHttpContextAccessor httpContextAccessor,
+            IAppUnitOfWork unitOfWork)
         {
-            _workoutRepository = workoutRepository;
-            _workoutExerciseRepository = workoutExerciseRepository;
-            _exerciseRepository = exerciseRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
 
@@ -65,18 +60,21 @@ namespace Infrastructure.AppServices.Workout
             {
                 throw new ArgumentNullException(nameof(dto));
             }
+            var workoutRepository = _unitOfWork.Repository<WorkoutEntity>();
 
             var entity = _mapper.Map<CustomWorkout>(dto);
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             ((CustomWorkout)entity).UserId = userId!;
-            await _workoutRepository.InsertAsync(entity);
+            await workoutRepository.InsertAsync(entity);
+            await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<WorkoutDTO>(entity);
         }
 
         public async Task<IEnumerable<WorkoutDTO>> CreateBulkAsync(IEnumerable<CreateWorkoutDTO> dtos)
         {
             var entities = _mapper.Map<IEnumerable<WorkoutEntity>>(dtos);
-            await _workoutRepository.BulkInsertAsync(entities);
+            var workoutRepository = _unitOfWork.Repository<WorkoutEntity>();
+            await workoutRepository.BulkInsertAsync(entities);
 
             return _mapper.Map<IEnumerable<WorkoutDTO>>(entities);
         }
@@ -87,8 +85,9 @@ namespace Infrastructure.AppServices.Workout
         {
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
+            var workoutRepository = _unitOfWork.Repository<WorkoutEntity>();
 
-            var entity = (await _workoutRepository.FindAsync(x => x.Id == dto.Id)).FirstOrDefault();
+            var entity = (await workoutRepository.FindAsync(x => x.Id == dto.Id)).FirstOrDefault();
             if (entity is null)
                 throw new KeyNotFoundException("Workout not found");
 
@@ -103,7 +102,8 @@ namespace Infrastructure.AppServices.Workout
 
             _mapper.Map(dto, entity);
 
-            await _workoutRepository.UpdateAsync(entity);
+            await workoutRepository.UpdateAsync(entity);
+            await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<WorkoutDTO>(entity);
         }
         
@@ -111,7 +111,8 @@ namespace Infrastructure.AppServices.Workout
         public async Task<IEnumerable<WorkoutDTO>> UpdateBulkAsync(IEnumerable<UpdateWorkoutDTO> dto)
         {
             var entities = _mapper.Map<IEnumerable<WorkoutEntity>>(dto);
-            await _workoutRepository.BulkUpdateAsync(entities);
+            var workoutRepository = _unitOfWork.Repository<WorkoutEntity>();
+            await workoutRepository.BulkUpdateAsync(entities);
             return _mapper.Map<IEnumerable<WorkoutDTO>>(entities);
         }
 
@@ -121,9 +122,9 @@ namespace Infrastructure.AppServices.Workout
         {
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
+            var workoutRepository = _unitOfWork.Repository<WorkoutEntity>();
 
-
-            var entity = (await _workoutRepository.FindAsync(x => x.Id == id)).FirstOrDefault();
+            var entity = (await workoutRepository.FindAsync(x => x.Id == id)).FirstOrDefault();
             if (entity is null)
             {
                 throw new KeyNotFoundException("Workout not found");
@@ -136,7 +137,8 @@ namespace Infrastructure.AppServices.Workout
                 if (entity is CustomWorkout customWorkout && customWorkout.UserId != userId)
                     throw new Exception("This workout doesn't belong to you");
             }
-            await _workoutRepository.RemoveAsync(entity);
+            await workoutRepository.RemoveAsync(entity);
+            await _unitOfWork.SaveChangesAsync();
             return;
         }
 
@@ -146,8 +148,9 @@ namespace Infrastructure.AppServices.Workout
             {
                 return;
             }
-
-            await _workoutRepository.BulkRemoveAsync(ids);
+            var workoutRepository = _unitOfWork.Repository<WorkoutEntity>();
+            await workoutRepository.BulkRemoveAsync(ids);
+            await _unitOfWork.SaveChangesAsync();
         }
 
 
@@ -155,12 +158,15 @@ namespace Infrastructure.AppServices.Workout
         {
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
-            
-            var customWorkout = (await _workoutRepository.FindAsync(x => x.Id == dto.workoutId)).FirstOrDefault();
+            var workoutRepository = _unitOfWork.Repository<WorkoutEntity>();
+            var exerciseRepository = _unitOfWork.Repository<ExerciseEntity>();
+            var workoutExerciseRepository = _unitOfWork.Repository<WorkoutExercise>();
+
+            var customWorkout = (await workoutRepository.FindAsync(x => x.Id == dto.workoutId)).FirstOrDefault();
             if (customWorkout is null)
                 throw new Exception("Workout wasn't found");
 
-            var exercise = (await _exerciseRepository.FindAsync(x => x.Id == dto.exerciseId)).FirstOrDefault();
+            var exercise = (await exerciseRepository.FindAsync(x => x.Id == dto.exerciseId)).FirstOrDefault();
             if (exercise is null)
                 throw new Exception("Exercise wasn't found");
 
@@ -170,7 +176,7 @@ namespace Infrastructure.AppServices.Workout
                     throw new Exception("This workout doens't belong to you");
             }
 
-            var entity = (await _workoutExerciseRepository.FindAsync(x => (x.WorkoutId == dto.workoutId
+            var entity = (await workoutExerciseRepository.FindAsync(x => (x.WorkoutId == dto.workoutId
             && x.ExerciseId == dto.exerciseId))).FirstOrDefault();
             if (entity is not null)
             {
@@ -187,16 +193,17 @@ namespace Infrastructure.AppServices.Workout
                 DurationSeconds = dto.DurationSeconds 
             };
 
-            await _workoutExerciseRepository.InsertAsync(newWorkoutExercise);
+            await workoutExerciseRepository.InsertAsync(newWorkoutExercise);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task DeleteFromWorkout(DeleteFromWorkoutDTO dto)
         {
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
+            var workoutExerciseRepository = _unitOfWork.Repository<WorkoutExercise>();
 
-           
-            var entityToDelete = await _workoutExerciseRepository.GetAll()
+            var entityToDelete = await workoutExerciseRepository.GetAll()
                 .Include(we => we.Workout)
                 .FirstOrDefaultAsync(we => we.Id == dto.Id);
 
@@ -209,7 +216,8 @@ namespace Infrastructure.AppServices.Workout
                     throw new UnauthorizedAccessException("This workout does not belong to you.");
             }
 
-            await _workoutExerciseRepository.RemoveAsync(entityToDelete);
+            await workoutExerciseRepository.RemoveAsync(entityToDelete);
+            await _unitOfWork.SaveChangesAsync();
         }
 
 
@@ -218,8 +226,9 @@ namespace Infrastructure.AppServices.Workout
         {
             var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var isAdmin = _httpContextAccessor.HttpContext?.User.IsInRole("Admin") ?? false;
+            var workoutExerciseRepository = _unitOfWork.Repository<WorkoutExercise>();
 
-            var entity = await _workoutExerciseRepository.GetAll()
+            var entity = await workoutExerciseRepository.GetAll()
                 .Include(we => we.Workout)
                 .FirstOrDefaultAsync(we => we.Id == dto.WorkoutExerciseId);
 
@@ -237,13 +246,15 @@ namespace Infrastructure.AppServices.Workout
             entity.WeightKg = dto.WeightKg;
             entity.DurationSeconds = dto.DurationSeconds;
 
-            await _workoutExerciseRepository.UpdateAsync(entity);
+            await workoutExerciseRepository.UpdateAsync(entity);
+            await _unitOfWork.SaveChangesAsync();
         }
 
 
         private IQueryable<WorkoutEntity> GetBaseWorkoutQueryWithIncludes()
         {
-            return _workoutRepository.GetAll().AsSplitQuery()
+            var workoutRepository = _unitOfWork.Repository<WorkoutEntity>();
+            return workoutRepository.GetAll().AsSplitQuery()
                 .Include(x => x.WorkoutExercises)
                     .ThenInclude(we => we.Exercise)
                         .ThenInclude(e => e.Images)
